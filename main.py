@@ -1,17 +1,36 @@
-# 这是一个示例 Python 脚本。
+import os
 
-# 按 Shift+F10 执行或将其替换为您的代码。
-# 按 双击 Shift 在所有地方搜索类、文件、工具窗口、操作和设置。
-from pytorch.dataPreparation.dataPreparation import prepare_data
+import torch
 
+from pytorch.datasets.flower_dataset import *
+from pytorch.model.net.model_net import Net
+from pytorch.model.train.model_train import modelTrain
+from pytorch.model.test.model_test import modelTest
 
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 Ctrl+F8 切换断点。
+net = Net()
+# 加载数据集
+train_dataset = datasets.ImageFolder('./assets/train', transform=train_transform)
+test_dataset = datasets.ImageFolder('./assets/test', transform=test_transform)
+train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, drop_last=True)
+test_loader = DataLoader(test_dataset, batch_size=4, shuffle=False, drop_last=True)
 
+# 定义损失函数和优化器
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+
+# 使用GPU运算,切换运算设备
+device = torch.device('cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+net.to(device)
+
+# 模型位置
+__PATH__ = './flower_net.pth'
 
 # 按间距中的绿色按钮以运行脚本。
 if __name__ == '__main__':
-    train_loader, test_loader = prepare_data('/path/to/data/directory')
-
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
+    if os.path.exists(__PATH__):
+        net.load_state_dict(torch.load(__PATH__))
+        # net.eval()  # 将模型转为评估模式
+    modelTrain(train_loader, optimizer, net, criterion, __PATH__)
+    modelTest(test_loader, net)
+    torch.save(net.state_dict(), __PATH__)
