@@ -42,7 +42,7 @@ test_loader = DataLoader(test_dataset, batch_size=30, shuffle=False, drop_last=T
 
 # 定义损失函数和优化器
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=0.009, momentum=0.9)
 
 # 使用GPU运算,切换运算设备
 device = torch.device('cpu')
