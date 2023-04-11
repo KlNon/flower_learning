@@ -34,6 +34,7 @@ test_transform = transforms.Compose([
 ])
 
 
+# noinspection DuplicatedCode
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -59,6 +60,7 @@ class Net(nn.Module):
         return x
 
 
+# noinspection DuplicatedCode
 net = Net()
 # 加载数据集
 train_dataset = datasets.ImageFolder('./assets/train', transform=train_transform)
@@ -79,6 +81,7 @@ net.to(device)
 __PATH__ = './flower_net.pth'
 
 
+# noinspection DuplicatedCode
 def modelTest(test_loader, net):
     from main import device
     # 在测试集上评估模型

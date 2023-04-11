@@ -6,32 +6,34 @@
 @Date    ：2023/3/29 22:03 
 """
 
-
 # 训练模型
 import torch
 
+from pytorch.model.init import device
 
-def modelTrain(train_loader, optimizer, net, criterion, path):
-    from main import device
-    epoch = 0
-    while True:
-        running_loss = 0.0
-        for i, data in enumerate(train_loader, 0):
-            if device.type == 'cuda':
-                inputs, labels = data[0].to(device), data[1].to(device)
-            else:
-                inputs, labels = data
+
+def modelTrain(train_loader, optimizer, net, criterion, path, max_epochs=200, min_loss=0.1):
+    running_loss = 0.0
+    for epoch in range(1, max_epochs + 1):
+        for i, (inputs, labels) in enumerate(train_loader, start=1):
+            inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
             outputs = net(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
             running_loss += loss.item()
-        epoch += 1
-        if running_loss / len(train_loader) < 0.01 or epoch > 300:  # 设定一个终止条件，比如平均损失小于0.01
-            break
-        if epoch % 100 == 0:
+
+        avg_loss = running_loss / len(train_loader)
+        print('[%d] loss: %.3f' % (epoch, avg_loss))
+
+        if epoch + 1 % (len(train_loader) // 5) == 0:
             torch.save(net.state_dict(), path)
-        print('Training finished after %d epochs' % epoch)
-        print('[%d, %5d] loss: %.3f' %
-              (epoch + 1, i + 1, running_loss / len(train_loader)))
+
+        if avg_loss < min_loss or epoch >= len(train_loader) * 2:
+            print('Training finished after %d epochs' % epoch)
+            torch.save(net.state_dict(), path)
+            return
+
+    print('Training finished after %d epochs' % max_epochs)
+    torch.save(net.state_dict(), path)
