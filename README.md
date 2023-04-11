@@ -1,4 +1,4 @@
-# ProjectCode
+# flower-learning
 
 该项目是对于蔷薇科植物生长的学习，使用了深度学习中的卷积神经网络 (CNN)，通过在训练集上训练模型，然后在测试集上评估模型在分类任务中的准确性。本项目使用 PyTorch 实现。
 
@@ -56,10 +56,10 @@
 ## 使用方法
 
 ### 安装依赖
-
 ```shell
 pip install -r requirements.txt
 ```
+除此以外还需安装pytorch,请去官网 [PyTorch官方](https://pytorch.org/get-started/locally/) 安装
 
 ### 运行项目
 
@@ -98,4 +98,4 @@ python main.py
 ## 参考资料
 
 - [PyTorch官方文档](https://pytorch.org/docs/stable/index.html)
-- [Udacity深度学习纳米学位](https://www.udacity.com/course/deep-learning-nanodegree--nd101)
+- [pytorch-handbook](https://github.com/zergtant/pytorch-handbook)
