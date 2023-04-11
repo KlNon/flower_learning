@@ -1,3 +1,5 @@
 /assets/
 /pytorch/model/outdated/
 /pytorch/data/
+/flower_net.pth
+/assets.zip
