@@ -49,4 +49,4 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 net.to(device)
 
 # 模型位置
-__PATH__ = './flower_net.pth'
+PATH = './flower_net.pth'
