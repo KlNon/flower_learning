@@ -95,6 +95,8 @@ python main.py
 
 在 main.py 文件中，定义了模型测试的函数 modelTest()，其中用到了上述定义的测试集 DataLoader。
 
+在使用flask框架下的web进行测试时,请使用如下url进行测试
+http://127.0.0.1:5000/inference?url=img/微型月季/006.jpg
 ## 参考资料
 
 - [PyTorch官方文档](https://pytorch.org/docs/stable/index.html)
