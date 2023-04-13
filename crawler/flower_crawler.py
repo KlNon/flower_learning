@@ -5,16 +5,21 @@
 @Author  ：KlNon
 @Date    ：2023/4/13 20:27 
 """
+import re
+
 from lxml import etree
 
 import requests
 import os
 import time
+import urllib3
 from bs4 import BeautifulSoup
 
 visited_links = set()  # 保存已经访问过的链接
 classes = ('藤本月季', '微月', '切花月季', '丰花月季', '大花月季', '冷门月季', '造型月季')
 MAX_RETRY = 5  # 最大重试次数
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def save_image(img_src, img_name, dir_path):
@@ -52,7 +57,7 @@ def save_image(img_src, img_name, dir_path):
         time.sleep(3)  # 等待3秒后重试
 
 
-def download_images_from_url(url, base_dir, xpath):
+def download_images_from_url(url, base_dir, xpath ,xpath2):
     # 检查这个链接是否已经访问过
     if url in visited_links:
         # print('skip：', url)
@@ -90,12 +95,16 @@ def download_images_from_url(url, base_dir, xpath):
             img_src = img_tag['src']
             if not img_src.startswith('https://www.tengbenyueji.com'):
                 img_src = ''.join(['https://www.tengbenyueji.com', '/', img_src])
-            img_name = img_tag.get('title')  # 如果没有title属性，则默认以'image'作为标题
+            img_name = img_tag.get('title')
             if img_name is None:
                 # print('No title attribute, continue...')
                 continue
-            img_name = img_name
-            print('Downloading image: {},:{}'.format(img_name, img_src))
+            img_name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z]+', '', img_name)  # 去除除中英文其它字符
+            img_name = img_name.replace('jpg', '')
+            if img_name == '':
+                img_name = root.xpath(xpath2)[0].text if root.xpath(xpath2) else None
+            img_name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z]+', '', img_name)  # 去除除中英文其它字符
+            print('Downloading image: {} :{}'.format(img_name, img_src))
             save_image(img_src, img_name, dir_path)
 
     # 找到当前页面中的所有链接，并递归访问
@@ -106,11 +115,11 @@ def download_images_from_url(url, base_dir, xpath):
             if link.startswith('/'):  # 相对路径拼接成绝对路径
                 link = "https://www.tengbenyueji.com" + link
             if link.startswith('https://www.tengbenyueji.com'):  # 只访问目标网站下的链接
-                download_images_from_url(link, base_dir, xpath)
+                download_images_from_url(link, base_dir, xpath,xpath2)
     except:
         return
 
 
 if __name__ == '__main__':
-    root_url = "https://www.tengbenyueji.com/shrubroses/4820.html"
-    download_images_from_url(root_url, "roses", '//*[@id="detail-article"]/div[2]/a')
+    root_url = "https://www.tengbenyueji.com"
+    download_images_from_url(root_url, "roses", '//*[@id="detail-article"]/div[2]/a' , '//*[@id="detail-article"]/div[1]/h1')
