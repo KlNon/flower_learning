@@ -9,42 +9,53 @@ from lxml import etree
 
 import requests
 import os
+import time
 from bs4 import BeautifulSoup
 
 visited_links = set()  # 保存已经访问过的链接
 classes = ('藤本月季', '微月', '切花月季', '丰花月季', '大花月季', '冷门月季', '造型月季')
+MAX_RETRY = 5  # 最大重试次数
 
 
 def save_image(img_src, img_name, dir_path):
     if '?' in img_name:  # 取消图片名字中的参数
         img_name = img_name.split('&')[0]
 
-    img_path = os.path.join(dir_path, img_name + '.jpg')  # 文件保存路径
+    img_path = os.path.join(dir_path, img_name)  # 文件保存路径
+
+    # 如果img_name中不包含后缀，则添加'.jpg'后缀
+    if not img_name.endswith('.jpg'):
+        img_path += '.jpg'
 
     # 检查文件是否已经存在，如果已经存在则在文件名中添加序号
     if os.path.exists(img_path):
         num = 1
         while True:
-            new_url = img_path[:-4] + '_' + str(num) + '.jpg'  # 加上序号并修改后缀
+            new_url = img_path[:-4] + '_' + str(num) + '.jpg'  # 加上序号并修改后缀，去掉原先已经添加的'.jpg'后缀
             if not os.path.exists(new_url):
                 img_path = new_url
                 break
             num += 1
 
     # 下载图片
-    try:
-        headers = {'Content-Type': 'image/jpeg'}  # 添加Content-Type头
-        with open(img_path, 'wb') as f:
-            img = requests.get(img_src, headers=headers).content
-            f.write(img)
-    except Exception as e:
-        print('Failed to save image: {}\nError: {}'.format(img_src, e))
+    for i in range(MAX_RETRY):
+        try:
+            headers = {'Content-Type': 'image/jpeg'}  # 添加Content-Type头
+            with open(img_path, 'wb') as f:
+                img = requests.get(img_src, headers=headers).content
+                if len(img) > 0:  # 判断是否下载到非空图片
+                    f.write(img)
+                    break  # 成功下载图片，退出循环
+        except Exception as e:
+            print('Failed to save image: {}\nError: {}'.format(img_src, e))
+        print('Retry #{} to download image: {}'.format(i + 1, img_src))
+        time.sleep(3)  # 等待3秒后重试
 
 
 def download_images_from_url(url, base_dir, xpath):
     # 检查这个链接是否已经访问过
     if url in visited_links:
-        print('skip：', url)
+        # print('skip：', url)
         return  # 如果访问过了，就直接返回
 
     visited_links.add(url)
@@ -66,7 +77,7 @@ def download_images_from_url(url, base_dir, xpath):
         element_text = element.text
     except Exception as e:
         element_text = ''
-        print('Failed to get element text, continue...')
+        # print('Failed to get element text, continue...')
 
     if element_text in classes:
         dir_name = element_text.strip().replace(' ', '_')  # 将元素文本中的空格替换成下划线，并去掉前后空格
@@ -81,7 +92,7 @@ def download_images_from_url(url, base_dir, xpath):
                 img_src = ''.join(['https://www.tengbenyueji.com', '/', img_src])
             img_name = img_tag.get('title')  # 如果没有title属性，则默认以'image'作为标题
             if img_name is None:
-                print('No title attribute, continue...')
+                # print('No title attribute, continue...')
                 continue
             img_name = img_name
             print('Downloading image: {},:{}'.format(img_name, img_src))
@@ -101,5 +112,5 @@ def download_images_from_url(url, base_dir, xpath):
 
 
 if __name__ == '__main__':
-    root_url = "https://www.tengbenyueji.com"
+    root_url = "https://www.tengbenyueji.com/shrubroses/4820.html"
     download_images_from_url(root_url, "roses", '//*[@id="detail-article"]/div[2]/a')
