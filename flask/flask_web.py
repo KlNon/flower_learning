@@ -22,10 +22,11 @@ from torch import nn
 
 # 数据预处理
 data_transform = transforms.Compose([
-    transforms.Resize((224, 224), 2),  # 对图像大小统一
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[  # 图像归一化
-        0.229, 0.224, 0.225])
+    transforms.RandomRotation(40),  # 随机旋转度数
+    transforms.RandomHorizontalFlip(),  # 水平翻转
+    transforms.Resize((224, 224)),  # 调整图像大小
+    transforms.ToTensor(),  # 将图像转换为Tensor
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.229, 0.224, 0.225)),  # 数据归一化
 ])
 
 # 类别
@@ -55,17 +56,14 @@ def inference():
     img = Image.open(im_url)
     img = data_transform(img)  # 这里经过转换后输出的input格式是[C,H,W],网络输入还需要增加一维批量大小B
     img = img.unsqueeze(0)  # 增加一维，输出的img格式为[1,C,H,W]
+    img = img.to(device)
 
-    img = Variable(img)
-    score = net(img)  # 将图片输入网络得到输出
-    probability = nn.functional.softmax(score, dim=1)  # 计算softmax，即该图片属于各类的概率
-    max_value, index = torch.max(probability, 1)  # 找到最大概率对应的索引号，该图片即为该索引号对应的类别
+    with torch.no_grad():
+        score = net(img)
+        probability = nn.functional.softmax(score, dim=1)
+        max_value, index = torch.max(probability.cpu(), 1)
 
     return str(data_classes[index.item()])
-    print()
-    print("识别为'{}'的概率为{}".format(data_classes[index.item()],max_value.item()))
-
-    return 'inference'
 
 
 if __name__ == '__main__':
