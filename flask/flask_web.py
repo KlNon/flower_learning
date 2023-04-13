@@ -8,8 +8,11 @@
 import os
 
 from flask import Flask, request, render_template
-from pytorch.model.net.model_net import Net
 from PIL import Image
+from pytorch.model.args import *
+from torchvision import models
+
+import torch.nn as nn
 import torchvision.transforms as transforms
 import torch
 
@@ -19,25 +22,23 @@ app = Flask(__name__)
 卷积神经网络相关程序
 '''
 
-# 数据预处理
-data_transform = transforms.Compose([
-    transforms.RandomRotation(40),  # 随机旋转度数
-    transforms.RandomHorizontalFlip(),  # 水平翻转
-    transforms.Resize((224, 224)),  # 调整图像大小
-    transforms.ToTensor(),  # 将图像转换为Tensor
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.229, 0.224, 0.225)),  # 数据归一化
-])
-
 # 类别
-data_classes = ('丰花月季', '地被月季', '壮花月季', '大花香水月季', '微型月季', '树状月季', '灌木月季', '藤本月季')
+data_classes = data_classes
 
 # 选择CPU还是GPU的操作
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # 选择模型
-net = Net()
-net.load_state_dict(torch.load('../flower_net.pth'))
 
+net = models.vgg16()
+net.classifier = nn.Sequential(nn.Linear(25088, 4096),  # vgg16
+                               nn.ReLU(),
+                               nn.Dropout(p=0.5),
+                               nn.Linear(4096, 4096),
+                               nn.ReLU(),
+                               nn.Dropout(p=0.5),
+                               nn.Linear(4096, 8))
+net.load_state_dict(torch.load('../flower_net_VGG16.pth'))
 net.eval()
 net.to(device)
 
@@ -54,7 +55,7 @@ def get_prediction_results(img_list):
         # 加载图像
         img = Image.open(img_path)
         # 预处理图像
-        img = data_transform(img)  # 这里经过转换后输出的 input 格式是 [C,H,W]，网络输入还需要增加一维批量大小B
+        img = test_transform(img)  # 这里经过转换后输出的 input 格式是 [C,H,W]，网络输入还需要增加一维批量大小B
         img = img.unsqueeze(0)  # 增加一维，输出的 img 格式为 [1,C,H,W]
         img = img.to(device)
         # 进行预测
@@ -98,9 +99,6 @@ def prediction_results_to_html_tables(results):
                       "Positive</th><th>False Negative</th></tr> "
         # 表格内容
         for r in group_results:
-            tp_count = sum(r['is_tp'] for r in group_results)
-            fp_count = sum(r['is_fp'] for r in group_results)
-            fn_count = sum(r['is_fn'] for r in group_results)
             html_table += "<tr>"
             html_table += f"<td>{r['img_path']}</td>"
             html_table += f"<td>{r['original_class']}</td>"
@@ -113,6 +111,9 @@ def prediction_results_to_html_tables(results):
             else:
                 html_table += "<td></td><td></td><td>✔</td>"
             html_table += "</tr>"
+        tp_count = sum(r['is_tp'] for r in group_results)
+        fp_count = sum(r['is_fp'] for r in group_results)
+        fn_count = sum(r['is_fn'] for r in group_results)
         html_table += "</table>"
         html_table += f"<tr><td colspan='4'><b>分类准确率：{tp_count / (tp_count + fp_count):.1%}</b></td></tr> "
         html_tables.append(html_table)

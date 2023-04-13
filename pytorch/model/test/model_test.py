@@ -5,12 +5,12 @@
 @Author  ：KlNon
 @Date    ：2023/3/29 22:07 
 """
-import torch
+from pytorch.model.args import *
 
-classes = ('丰花月季', '地被月季', '壮花月季', '大花香水月季', '微型月季', '树状月季', '灌木月季', '藤本月季')
+classes = data_classes
 
 
-def modelTest(test_loader, net):
+def modelTest(net):
     from main import device
     # 在测试集上评估模型
     correct = 0
