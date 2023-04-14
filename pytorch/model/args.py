@@ -13,7 +13,7 @@ import torchvision.transforms as transforms
 
 from torch.utils.data import DataLoader
 
-PATH = './flower_net_VGG16.pth'
+PATH = './flower_net.pth'
 batch_size = 4
 learning_rate = 0.001
 

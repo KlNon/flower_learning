@@ -13,16 +13,9 @@ import torch.nn as nn
 import torch.optim as optim
 
 from pytorch.model.args import *
+from pytorch.model.net.model_net import Net
 
-net = models.vgg16()
-net.classifier = nn.Sequential(nn.Linear(25088, 4096),  # vgg16
-                               nn.ReLU(),
-                               nn.Dropout(p=0.5),
-                               nn.Linear(4096, 4096),
-                               nn.ReLU(),
-                               nn.Dropout(p=0.5),
-                               nn.Linear(4096, 8))
-
+net = Net()
 net.to(device)
 
 # 定义损失函数和优化器
