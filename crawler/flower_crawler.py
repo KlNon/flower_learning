@@ -57,7 +57,7 @@ def save_image(img_src, img_name, dir_path):
         time.sleep(3)  # 等待3秒后重试
 
 
-def download_images_from_url(url, base_dir, xpath ,xpath2):
+def download_images_from_url(url, base_dir, xpath, xpath2):
     # 检查这个链接是否已经访问过
     if url in visited_links:
         # print('skip：', url)
@@ -115,11 +115,12 @@ def download_images_from_url(url, base_dir, xpath ,xpath2):
             if link.startswith('/'):  # 相对路径拼接成绝对路径
                 link = "https://www.tengbenyueji.com" + link
             if link.startswith('https://www.tengbenyueji.com'):  # 只访问目标网站下的链接
-                download_images_from_url(link, base_dir, xpath,xpath2)
+                download_images_from_url(link, base_dir, xpath, xpath2)
     except:
         return
 
 
 if __name__ == '__main__':
     root_url = "https://www.tengbenyueji.com"
-    download_images_from_url(root_url, "roses", '//*[@id="detail-article"]/div[2]/a' , '//*[@id="detail-article"]/div[1]/h1')
+    download_images_from_url(root_url, "roses", '//*[@id="detail-article"]/div[2]/a',
+                             '//*[@id="detail-article"]/div[1]/h1')
