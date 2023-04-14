@@ -14,6 +14,9 @@ import os
 import time
 import urllib3
 from bs4 import BeautifulSoup
+import sys
+
+sys.setrecursionlimit(1000000)  # 设置递归深度限制为 1000000
 
 visited_links = set()  # 保存已经访问过的链接
 classes = ('藤本月季', '微月', '切花月季', '丰花月季', '大花月季', '冷门月季', '造型月季')
@@ -58,66 +61,66 @@ def save_image(img_src, img_name, dir_path):
 
 
 def download_images_from_url(url, base_dir, xpath, xpath2):
-    # 检查这个链接是否已经访问过
-    if url in visited_links:
-        # print('skip：', url)
-        return  # 如果访问过了，就直接返回
-
-    visited_links.add(url)
-
-    if not os.path.exists(base_dir):  # 如果文件夹不存在则创建
+    visited_links.add(url)  # 添加到已访问
+    if not os.path.exists(base_dir):
         os.mkdir(base_dir)
 
-    # 获取HTML代码，并解析出所有的图片链接
-    response = requests.get(url, verify=False)
-    response.encoding = response.apparent_encoding  # 自动识别网页编码
-    html = response.text
-    soup = BeautifulSoup(html, "html.parser")
-    img_tags = soup.find_all('img')
+    # 用一个列表来保存将要访问的链接
+    links = [url]
 
-    parser = etree.HTMLParser()
-    root = etree.fromstring(html, parser)
-    element = root.xpath(xpath)[0] if root.xpath(xpath) else None  # 在解析后的 HTML 页面中查找元素
-    try:
-        element_text = element.text
-    except Exception as e:
-        element_text = ''
-        # print('Failed to get element text, continue...')
+    while links:
+        link = links.pop(0)  # 从列表中弹出第一个元素
 
-    if element_text in classes:
-        dir_name = element_text.strip().replace(' ', '_')  # 将元素文本中的空格替换成下划线，并去掉前后空格
-        dir_path = os.path.join(base_dir, dir_name)
+        # 获取HTML代码，并解析出所有的图片链接
+        response = requests.get(link, verify=False)
+        response.encoding = response.apparent_encoding
+        html = response.text
+        soup = BeautifulSoup(html, "html.parser")
+        img_tags = soup.find_all('img')
 
-        if not os.path.exists(dir_path):  # 如果文件夹不存在则创建
-            os.mkdir(dir_path)
+        parser = etree.HTMLParser()
+        root = etree.fromstring(html, parser)
+        element = root.xpath(xpath)[0] if root.xpath(xpath) else None
+        try:
+            element_text = element.text
+        except Exception as e:
+            element_text = ''
+            # print('Failed to get element text, continue...')
 
-        for img_tag in img_tags:
-            img_src = img_tag['src']
-            if not img_src.startswith('https://www.tengbenyueji.com'):
-                img_src = ''.join(['https://www.tengbenyueji.com', '/', img_src])
-            img_name = img_tag.get('title')
-            if img_name is None:
-                # print('No title attribute, continue...')
-                continue
-            img_name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z]+', '', img_name)  # 去除除中英文其它字符
-            img_name = img_name.replace('jpg', '')
-            if img_name == '':
-                img_name = root.xpath(xpath2)[0].text if root.xpath(xpath2) else None
-            img_name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z]+', '', img_name)  # 去除除中英文其它字符
-            print('Downloading image: {} :{}'.format(img_name, img_src))
-            save_image(img_src, img_name, dir_path)
+        if element_text in classes:
+            dir_name = element_text.strip().replace(' ', '_')
+            dir_path = os.path.join(base_dir, dir_name)
+            if not os.path.exists(dir_path):
+                os.mkdir(dir_path)
 
-    # 找到当前页面中的所有链接，并递归访问
-    try:
-        link_tags = soup.find_all('a')
-        for link_tag in link_tags:
-            link = link_tag.get('href')
-            if link.startswith('/'):  # 相对路径拼接成绝对路径
-                link = "https://www.tengbenyueji.com" + link
-            if link.startswith('https://www.tengbenyueji.com'):  # 只访问目标网站下的链接
-                download_images_from_url(link, base_dir, xpath, xpath2)
-    except:
-        return
+            for img_tag in img_tags:
+                img_src = img_tag['src']
+                if not img_src.startswith('https://www.tengbenyueji.com'):
+                    img_src = ''.join(['https://www.tengbenyueji.com', '/', img_src])
+                img_name = img_tag.get('title')
+                if img_name is None:
+                    continue
+                img_name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z]+', '', img_name)
+                img_name = img_name.replace('jpg', '')
+                if img_name == '':
+                    img_name = root.xpath(xpath2)[0].text if root.xpath(xpath2) else None
+                img_name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z]+', '', img_name)
+                print('Downloading image: {} :{}'.format(img_name, img_src))
+                save_image(img_src, img_name, dir_path)
+
+        # 找到当前页面中的所有链接，并添加到列表中
+        try:
+            link_tags = soup.find_all('a')
+            for link_tag in link_tags:
+                link = link_tag.get('href')
+                if link.startswith('/'):
+                    link = "https://www.tengbenyueji.com" + link
+                if link.startswith('https://www.tengbenyueji.com'):
+                    if link not in visited_links:
+                        links.append(link)
+                        visited_links.add(link)
+        except Exception as e:
+            print("Failed to get links from url: {} ,Error:{}".format(link_tag, e))
 
 
 if __name__ == '__main__':
