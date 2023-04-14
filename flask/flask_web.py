@@ -8,37 +8,40 @@
 import os
 
 from flask import Flask, request, render_template
-from PIL import Image
-from pytorch.model.args import *
-from torchvision import models
-
-import torch.nn as nn
-import torchvision.transforms as transforms
-import torch
+from pytorch.model.net.model_net import Net
 
 app = Flask(__name__)
 
 '''
 卷积神经网络相关程序
 '''
+from PIL import Image
+import torchvision.transforms as transforms
+from torchvision import models  # 人家的模型
+from torch.autograd import Variable
+import torch
+from torch import nn
+
+# 数据预处理
+data_transform = transforms.Compose([
+    transforms.RandomRotation(40),  # 随机旋转度数
+    transforms.RandomHorizontalFlip(),  # 水平翻转
+    transforms.Resize((224, 224)),  # 调整图像大小
+    transforms.ToTensor(),  # 将图像转换为Tensor
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.229, 0.224, 0.225)),  # 数据归一化
+])
 
 # 类别
-data_classes = data_classes
+data_classes = ('丰花月季', '地被月季', '壮花月季', '大花香水月季', '微型月季', '树状月季', '灌木月季', '藤本月季')
 
 # 选择CPU还是GPU的操作
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # 选择模型
+net = Net()
+net.load_state_dict(torch.load('../flower_net.pth'))
 
-net = models.vgg16()
-net.classifier = nn.Sequential(nn.Linear(25088, 4096),  # vgg16
-                               nn.ReLU(),
-                               nn.Dropout(p=0.5),
-                               nn.Linear(4096, 4096),
-                               nn.ReLU(),
-                               nn.Dropout(p=0.5),
-                               nn.Linear(4096, 8))
-net.load_state_dict(torch.load('../flower_net_VGG16.pth'))
+# net.load_state_dict(torch.load("VGG16_flower_200.pkl", map_location=torch.device('cpu')))
 net.eval()
 net.to(device)
 
@@ -47,7 +50,7 @@ flask相关程序
 '''
 
 
-def get_prediction_results(img_list):
+def get_prediction_results(img_list, net, data_classes, device):
     results = []
     for img_path in img_list:
         # 获取原始类别
@@ -55,27 +58,19 @@ def get_prediction_results(img_list):
         # 加载图像
         img = Image.open(img_path)
         # 预处理图像
-        img = test_transform(img)  # 这里经过转换后输出的 input 格式是 [C,H,W]，网络输入还需要增加一维批量大小B
-        img = img.unsqueeze(0)  # 增加一维，输出的 img 格式为 [1,C,H,W]
-        img = img.to(device)
+        img = data_transform['val'](img).unsqueeze(0).to(device)
         # 进行预测
         with torch.no_grad():
             outputs = net(img)
             _, preds = torch.max(outputs, 1)
             score = torch.nn.functional.softmax(outputs, dim=1)[0][preds[0]].item()
             predicted_class = data_classes[preds[0]]
-        is_tp = original_class == predicted_class
-        is_fp = original_class != predicted_class and predicted_class in data_classes
-        is_fn = original_class != predicted_class and predicted_class not in data_classes
         # 记录预测结果
         result = {
             'img_path': img_path,
             'original_class': original_class,
             'predicted_class': predicted_class,
-            'score': score,
-            'is_tp': is_tp,
-            'is_fp': is_fp,
-            'is_fn': is_fn
+            'score': score
         }
         results.append(result)
     return results
@@ -95,8 +90,7 @@ def prediction_results_to_html_tables(results):
         html_table = "<table class='prediction-table'>"
         # 表头
         html_table += f"<tr><th colspan='3'>{group_name}</th></tr>"
-        html_table += "<tr><th>图片路径</th><th>原始类别</th><th>预测类别</th><th>符合度</th><th>True Positive</th><th>False " \
-                      "Positive</th><th>False Negative</th></tr> "
+        html_table += "<tr><th>图片路径</th><th>原始类别</th><th>预测类别</th><th>符合度</th></tr>"
         # 表格内容
         for r in group_results:
             html_table += "<tr>"
@@ -104,18 +98,8 @@ def prediction_results_to_html_tables(results):
             html_table += f"<td>{r['original_class']}</td>"
             html_table += f"<td>{r['predicted_class']}</td>"
             html_table += f"<td>{r['score']}</td>"
-            if r['is_tp']:
-                html_table += "<td>✔</td><td></td><td></td>"
-            elif r['is_fp']:
-                html_table += "<td></td><td>✔</td><td></td>"
-            else:
-                html_table += "<td></td><td></td><td>✔</td>"
             html_table += "</tr>"
-        tp_count = sum(r['is_tp'] for r in group_results)
-        fp_count = sum(r['is_fp'] for r in group_results)
-        fn_count = sum(r['is_fn'] for r in group_results)
         html_table += "</table>"
-        html_table += f"<tr><td colspan='4'><b>分类准确率：{tp_count / (tp_count + fp_count):.1%}</b></td></tr> "
         html_tables.append(html_table)
 
     return html_tables
@@ -136,16 +120,6 @@ def count_true_positives(pred_results):
 
 
 # 定义函数，计算每个类别的预测准确率和召回率
-# TP表示真正例（True Positive）
-# FP表示假正例（False Positive）
-# FN表示假反例（False Negative）
-# 当进行分类预测时，如果预测结果与实际结果相同，则是真正例（True Positive，TP），例如在癌症筛查中，如果预测结果是该患者患有癌症，实际上该患者真的患有癌症，那么就是真正例。
-#
-# 如果预测结果为正例但实际结果为负例，则是假正例（False Positive，FP），例如在安检场合中，如果安检人员将一名正常乘客错误认为是恐怖分子，那么就是假正例。
-#
-# 如果预测结果为负例但实际结果为正例，则是假反例（False Negative，FN），例如在药物治疗中，如果医生将一个患者的病情判断为健康，实际上该患者的病情很严重，那么就是假反例。
-#
-# 可以用比喻来理解，真正例就像是“命中靶心”，假正例就像是“误伤无辜”，假反例就像是“漏网之鱼”。
 def compute_precision_recall(TP, FP, FN):
     precision = {}
     recall = {}
@@ -193,7 +167,27 @@ def inference():
                 img_path = os.path.join(root, file)
                 img_list.append(img_path)
 
-    result_list = get_prediction_results(img_list)
+    result_list = []
+    for img_path in img_list:
+        original_class = os.path.basename(os.path.dirname(img_path))
+        img = Image.open(img_path)
+        img = data_transform(img)  # 这里经过转换后输出的 input 格式是 [C,H,W]，网络输入还需要增加一维批量大小B
+        img = img.unsqueeze(0)  # 增加一维，输出的 img 格式为 [1,C,H,W]
+        img = img.to(device)
+
+        with torch.no_grad():
+            outputs = net(img)
+            _, preds = torch.max(outputs, 1)
+            score = torch.nn.functional.softmax(outputs, dim=1)[0][preds[0]].item()
+            predicted_class = data_classes[preds[0]]
+
+        result = {
+            'img_path': img_path,
+            'original_class': original_class,
+            'predicted_class': predicted_class,
+            'score': score
+        }
+        result_list.append(result)
 
     html_tables = prediction_results_to_html_tables(result_list)
     html_tables.append(prediction_TPFPFN_to_html_tables(result_list))

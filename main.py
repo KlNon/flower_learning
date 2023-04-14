@@ -1,6 +1,7 @@
 import os
 
 from pytorch.model.init import *
+from pytorch.model.init import PATH
 from pytorch.model.train.model_train import modelTrain
 from pytorch.model.test.model_test import modelTest
 
@@ -8,6 +9,7 @@ from pytorch.model.test.model_test import modelTest
 if __name__ == '__main__':
     if os.path.exists(PATH):
         net.load_state_dict(torch.load(PATH))
-    modelTrain(optimizer, net, criterion)
-    modelTest(net)
+        # net.eval()  # 将模型转为评估模式
+    # modelTrain(train_loader, test_loader, optimizer, net, criterion, __PATH__)
+    modelTest(test_loader, net)
     torch.save(net.state_dict(), PATH)
