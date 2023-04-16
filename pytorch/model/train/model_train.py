@@ -11,6 +11,7 @@ from torch.autograd import Variable
 
 from pytorch.model.args import *
 from pytorch.model.test.model_test import modelTest
+from pytorch.model.val.model_val import modelVal
 
 
 def modelTrain(optimizer, net, criterion, max_epochs=200, min_loss=0.01):
