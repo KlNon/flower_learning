@@ -32,7 +32,8 @@ def modelTrain(optimizer, net, criterion, max_epochs=200, min_loss=0.01):
             running_loss += loss.item()
 
         avg_loss = running_loss / len(train_loader)
-        print('[%d/%5d] loss: %.3f' % (epoch, len(train_loader), avg_loss))
+        print('[%d/%5d] Training loss: %.3f' % (epoch, len(train_loader), avg_loss))
+        modelVal(net)
 
         if epoch + 1 % (len(train_loader) // 8):
             print('Saving model after %d epochs' % epoch)
