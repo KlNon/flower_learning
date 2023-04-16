@@ -72,7 +72,11 @@ def download_images_from_url(url, base_dir, xpath, xpath2):
         link = links.pop(0)  # 从列表中弹出第一个元素
 
         # 获取HTML代码，并解析出所有的图片链接
-        response = requests.get(link, verify=False)
+        try:
+            response = requests.get(link, verify=False)
+        except Exception as e:
+            print('Failed to get response, continue...')
+            continue
         response.encoding = response.apparent_encoding
         html = response.text
         soup = BeautifulSoup(html, "html.parser")
@@ -120,7 +124,8 @@ def download_images_from_url(url, base_dir, xpath, xpath2):
                         links.append(link)
                         visited_links.add(link)
         except Exception as e:
-            print("Failed to get links from url: {} ,Error:{}".format(link_tag, e))
+            # print("Failed to get links from url: {} ,Error:{}".format(link_tag, e))
+            pass
 
 
 if __name__ == '__main__':

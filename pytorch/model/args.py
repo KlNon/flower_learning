@@ -14,7 +14,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 PATH = './flower_net_VGG16.pth'
-batch_size = 4
+batch_size = 80
 learning_rate = 0.001
 
 # 使用GPU运算,切换运算设备
