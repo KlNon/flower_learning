@@ -39,7 +39,6 @@ def modelTrain(optimizer, net, criterion, max_epochs=200, min_loss=0.01):
         if epoch + 1 % (len(train_loader) // 8):
             print('Saving model after %d epochs' % epoch)
             torch.save(net.state_dict(), PATH)
-            modelTest(test_loader, net)
 
         if avg_loss < min_loss or epoch >= len(train_loader) * 2:
             print('Training finished after %d epochs' % epoch)

@@ -14,7 +14,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 PATH = './flower_net_VGG16.pth'
-batch_size = 80
+batch_size = 50
 learning_rate = 0.001
 
 # 使用GPU运算,切换运算设备
@@ -41,9 +41,9 @@ test_transform = transforms.Compose([
 ])
 
 # 加载数据集 训练集,验证集,测试集
-train_dataset = datasets.ImageFolder('./assets/train', transform=train_transform)
-val_dataset = datasets.ImageFolder('./assets/val', transform=test_transform)
-test_dataset = datasets.ImageFolder('./assets/test', transform=test_transform)
+train_dataset = datasets.ImageFolder('./../assets/train', transform=train_transform)
+val_dataset = datasets.ImageFolder('./../assets/val', transform=test_transform)
+test_dataset = datasets.ImageFolder('./../assets/test', transform=test_transform)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, drop_last=True)

@@ -49,6 +49,7 @@ flask相关程序
 
 def get_prediction_results(img_list):
     results = []
+    net.eval()
     for img_path in img_list:
         # 获取原始类别
         original_class = os.path.basename(os.path.dirname(img_path))

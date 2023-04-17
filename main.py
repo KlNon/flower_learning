@@ -2,7 +2,6 @@ import os
 
 from pytorch.model.init import *
 from pytorch.model.train.model_train import modelTrain
-from pytorch.model.val.model_val import modelVal
 from pytorch.model.test.model_test import modelTest
 
 # 按间距中的绿色按钮以运行脚本。

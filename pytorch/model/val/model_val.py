@@ -5,6 +5,7 @@
 @Author  ：KlNon
 @Date    ：2023/4/16 22:22 
 """
+import torch
 
 from pytorch.model.args import *
 from pytorch.model.init import criterion
@@ -18,9 +19,11 @@ def modelVal(net):
         val_loss = 0.0
         correct = 0
         total = 0
-        for inputs, targets in val_loader:
-            inputs = torch.tensor(inputs, dtype=torch.float32).to(device)
-            targets = torch.tensor(targets, dtype=torch.float32).to(device)
+        for data in val_loader:
+            if device.type == 'cuda':
+                inputs, targets = data[0].to(device), data[1].to(device)
+            else:
+                inputs, targets = data
 
             outputs = net(inputs)
             loss = criterion(outputs, targets)
