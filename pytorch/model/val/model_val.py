@@ -15,6 +15,7 @@ data_classes = data_classes
 
 def modelVal(net):
     # 使用验证集评估模型性能
+    net.eval()
     with torch.no_grad():
         val_loss = 0.0
         correct = 0

@@ -9,7 +9,6 @@ import os
 
 from flask import Flask, request, render_template
 from PIL import Image
-from pytorch.model.args import *
 from torchvision import models
 
 import torch.nn as nn
@@ -23,22 +22,28 @@ app = Flask(__name__)
 '''
 
 # 类别
-data_classes = data_classes
+data_classes = ['丰花月季', '切花月季', '大花月季']
 
 # 选择CPU还是GPU的操作
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+test_transform = transforms.Compose([
+    transforms.RandomHorizontalFlip(),  # 水平翻转
+    transforms.Resize((224, 224)),  # 调整图像大小
+    transforms.ToTensor(),  # 将图像转换为Tensor
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.229, 0.224, 0.225)),  # 数据归一化
+])
+
 # 选择模型
 
-net = models.vgg16()
-net.classifier = nn.Sequential(nn.Linear(25088, 4096),  # vgg16
+net = models.vgg19()
+net.classifier = nn.Sequential(nn.Linear(25088, 4096),  # vgg19
                                nn.ReLU(),
-                               nn.Dropout(p=0.5),
                                nn.Linear(4096, 4096),
                                nn.ReLU(),
                                nn.Dropout(p=0.5),
                                nn.Linear(4096, 8))
-net.load_state_dict(torch.load('../flower_net_VGG16.pth'))
+net.load_state_dict(torch.load('../flower_net_VGG19.pth'))
 net.eval()
 net.to(device)
 
@@ -56,29 +61,32 @@ def get_prediction_results(img_list):
         # 加载图像
         img = Image.open(img_path)
         # 预处理图像
-        img = test_transform(img)  # 这里经过转换后输出的 input 格式是 [C,H,W]，网络输入还需要增加一维批量大小B
-        img = img.unsqueeze(0)  # 增加一维，输出的 img 格式为 [1,C,H,W]
-        img = img.to(device)
-        # 进行预测
-        with torch.no_grad():
-            outputs = net(img)
-            _, preds = torch.max(outputs, 1)
-            score = torch.nn.functional.softmax(outputs, dim=1)[0][preds[0]].item()
-            predicted_class = data_classes[preds[0]]
-        is_tp = original_class == predicted_class
-        is_fp = original_class != predicted_class and predicted_class in data_classes
-        is_fn = original_class != predicted_class and predicted_class not in data_classes
-        # 记录预测结果
-        result = {
-            'img_path': img_path,
-            'original_class': original_class,
-            'predicted_class': predicted_class,
-            'score': score,
-            'is_tp': is_tp,
-            'is_fp': is_fp,
-            'is_fn': is_fn
-        }
-        results.append(result)
+        try:
+            img = test_transform(img)  # 这里经过转换后输出的 input 格式是 [C,H,W]，网络输入还需要增加一维批量大小B
+            img = img.unsqueeze(0)  # 增加一维，输出的 img 格式为 [1,C,H,W]
+            img = img.to(device)
+            # 进行预测
+            with torch.no_grad():
+                outputs = net(img)
+                _, preds = torch.max(outputs, 1)
+                score = torch.nn.functional.softmax(outputs, dim=1)[0][preds[0]].item()
+                predicted_class = data_classes[preds[0]]
+            is_tp = original_class == predicted_class
+            is_fp = original_class != predicted_class and predicted_class in data_classes
+            is_fn = original_class != predicted_class and predicted_class not in data_classes
+            # 记录预测结果
+            result = {
+                'img_path': img_path,
+                'original_class': original_class,
+                'predicted_class': predicted_class,
+                'score': score,
+                'is_tp': is_tp,
+                'is_fp': is_fp,
+                'is_fn': is_fn
+            }
+            results.append(result)
+        except:
+            print("a")
     return results
 
 

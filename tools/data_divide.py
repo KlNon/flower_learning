@@ -14,7 +14,7 @@ from shutil import copy2
 scale = [0.6, 0.2, 0.2]
 
 # 类别
-classes = ['丰花月季', '切花月季', '大花月季', '微型月季', '藤本月季', '其它月季']
+classes = ['月季']
 
 for each in classes:
     datadir_normal = "./../assets/data/" + each + "/"  # 原文件夹
@@ -31,7 +31,7 @@ for each in classes:
     if not os.path.exists(trainDir):  # 如果不存在这个文件夹，就创造一个
         os.makedirs(trainDir)
 
-    validDir = "./../assets/val/" + each  # （将验证集放在这个文件夹下）
+    validDir = "./../assets/valid/" + each  # （将验证集放在这个文件夹下）
     if not os.path.exists(validDir):
         os.makedirs(validDir)
 

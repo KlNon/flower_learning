@@ -15,6 +15,7 @@ def modelTest(net):
     # 在测试集上评估模型
     correct = 0
     total = 0
+    net.eval()
     with torch.no_grad():
         for data in test_loader:
             if device.type == 'cuda':

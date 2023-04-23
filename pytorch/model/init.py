@@ -10,21 +10,16 @@ import torch
 from torchvision import models
 
 import torch.nn as nn
-import torch.optim as optim
+from torchvision.models import VGG19_Weights
 
 from pytorch.model.args import *
+from pytorch.model.net.model_net import Net
 
-net = models.vgg16()
-net.classifier = nn.Sequential(nn.Linear(25088, 4096),  # vgg16
-                               nn.ReLU(),
-                               nn.Dropout(p=0.5),
-                               nn.Linear(4096, 4096),
-                               nn.ReLU(),
-                               nn.Dropout(p=0.5),
-                               nn.Linear(4096, 8))
+vgg = models.vgg19(weights=VGG19_Weights.IMAGENET1K_V1)
+net = Net(vgg)
 
 net.to(device)
 
 # 定义损失函数和优化器
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
+optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, net.parameters()), lr=0.0001, momentum=0.9)

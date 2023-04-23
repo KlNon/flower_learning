@@ -12,8 +12,9 @@
       <excludeFolder url="file://$MODULE_DIR$/assets" />
       <excludeFolder url="file://$MODULE_DIR$/pytorch/data" />
       <excludeFolder url="file://$MODULE_DIR$/crawler/roses" />
+      <excludeFolder url="file://$MODULE_DIR$/flask/img" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (PyTorch)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (Torch)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">
