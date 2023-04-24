@@ -14,7 +14,7 @@ from pytorch.model.args import *
 from pytorch.model.init import criterion
 
 
-def modelTrain(epochs, model, optimizers, lr_scheduler=None,
+def modelTrain(epochs, optimizers, lr_scheduler=None,
                dataloader=dataloaders, state_dict=None,
                checkpoint_path="checkpoint.pt", accuracy_target=None,
                show_graphs=True):
@@ -63,7 +63,8 @@ def modelTrain(epochs, model, optimizers, lr_scheduler=None,
             # Calculate loss for this train batch
             batch_loss = criterion(output, labels)
             # Do the backpropagation
-            batch_loss.backward()
+            if batch_loss.requires_grad:
+                batch_loss.backward()
 
             # Optimize parameters
             [opt.step() for opt in optimizers]
@@ -160,7 +161,9 @@ def modelTrain(epochs, model, optimizers, lr_scheduler=None,
             plt.figure(figsize=(25, 8))
             plt.plot(np.array(labels_graph), 'k.')
             plt.plot(np.array(top_class_graph), 'r.')
-            plt.show()
+            # plt.show()
+            plt.savefig('./output_data/Epoch_' + str(state_dict['epochs_trained']) + '_A.png')
+            plt.close()
 
             plt.figure(figsize=(25, 5))
             plt.subplot(1, 2, 1)
@@ -171,7 +174,9 @@ def modelTrain(epochs, model, optimizers, lr_scheduler=None,
             plt.subplot(1, 2, 2)
             plt.plot(np.array(state_dict['trace_train_lr']), 'b', label='train loss')
 
-            plt.show()
+            # plt.show()
+            plt.savefig('./output_data/Epoch_' + str(state_dict['epochs_trained']) + '_B.png')
+            plt.close()
 
         # stop training loop if accuracy_target has been reached
         if accuracy_target and state_dict['trace_accuracy'][-1] >= accuracy_target:

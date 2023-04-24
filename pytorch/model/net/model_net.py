@@ -3,7 +3,7 @@ import torch.nn as nn
 from torchvision import models
 
 # Build and train your network
-from torchvision.models import VGG19_Weights
+from torchvision.models import VGG19_Weights, ResNet50_Weights, ResNet152_Weights
 
 from pytorch.model.net.classifier.model_classifier import create_classifier
 
@@ -11,7 +11,7 @@ from pytorch.model.net.classifier.model_classifier import create_classifier
 def create_network(model_name='resnet50', output_size=103, hidden_layers=[1000]):
     if model_name == 'resnet50':
         # Download the model
-        model = models.resnet50(pretrained=True)
+        model = models.resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)
         # Replace the model classifier
         model.fc = create_classifier(2048, output_size, hidden_layers)
 
@@ -19,7 +19,7 @@ def create_network(model_name='resnet50', output_size=103, hidden_layers=[1000])
 
     if model_name == 'resnet152':
         # Download the model
-        model = models.resnet152(pretrained=True)
+        model = models.resnet152(weights=ResNet152_Weights.IMAGENET1K_V1)
         # Replace the model classifier
         model.fc = create_classifier(2048, output_size, hidden_layers)
 

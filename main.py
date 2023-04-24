@@ -1,7 +1,4 @@
-import os
-
 from pytorch.model.init import *
-from pytorch.model.label.model_load_label import class_to_idx, cat_label_to_name
 from pytorch.model.train.model_train import modelTrain
 from pytorch.model.test.model_test import modelTest
 
@@ -43,7 +40,7 @@ if __name__ == '__main__':
 
         checkpoint_path = gdrive_dir + "checkpoint_phase_one.pt"
 
-        state_dict = modelTrain(PHASE_ONE, model, optimizers, lr_scheduler=lr_scheduler,
+        state_dict = modelTrain(PHASE_ONE, optimizers, lr_scheduler=lr_scheduler,
                                 state_dict=None, accuracy_target=None,
                                 checkpoint_path=checkpoint_path)
 
@@ -61,7 +58,7 @@ if __name__ == '__main__':
 
         checkpoint_path = gdrive_dir + "checkpoint_phase_two.pt"
 
-        state_dict = modelTrain(PHASE_TWO, model, optimizers, lr_scheduler=None,
+        state_dict = modelTrain(PHASE_TWO, optimizers, lr_scheduler=None,
                                 state_dict=state_dict, accuracy_target=None,
                                 checkpoint_path=checkpoint_path)
 
@@ -81,7 +78,7 @@ if __name__ == '__main__':
 
         checkpoint_path = gdrive_dir + "checkpoint_phase_three.pt"
 
-        state_dict = modelTrain(PHASE_THREE, model, optimizers, lr_scheduler=lr_scheduler,
+        state_dict = modelTrain(PHASE_THREE, optimizers, lr_scheduler=lr_scheduler,
                                 state_dict=state_dict, accuracy_target=None,
                                 checkpoint_path=checkpoint_path)
 
