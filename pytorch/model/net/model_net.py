@@ -1,24 +1,36 @@
 import torch.nn as nn
 
+from torchvision import models
 
-class Net(nn.Module):
-    def __init__(self, model):
-        super(Net, self).__init__()
-        self.features = model.features
-        # for p in self.parameters():
-        #     p.requires_grad = False
-        self.classifier = nn.Sequential(
-            nn.Linear(25088, 4096, bias=True),
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.5, inplace=False),
-            nn.Linear(4096, 4096, bias=True),
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.5, inplace=False),
-            nn.Linear(4096, 103, bias=True)
-        )
+# Build and train your network
+from torchvision.models import VGG19_Weights
 
-    def forward(self, x):
-        x = self.features(x)
-        x = x.view(x.shape[0], -1)
-        x = self.classifier(x)
-        return x
+from pytorch.model.net.classifier.model_classifier import create_classifier
+
+
+def create_network(model_name='resnet50', output_size=103, hidden_layers=[1000]):
+    if model_name == 'resnet50':
+        # Download the model
+        model = models.resnet50(pretrained=True)
+        # Replace the model classifier
+        model.fc = create_classifier(2048, output_size, hidden_layers)
+
+        return model
+
+    if model_name == 'resnet152':
+        # Download the model
+        model = models.resnet152(pretrained=True)
+        # Replace the model classifier
+        model.fc = create_classifier(2048, output_size, hidden_layers)
+
+        return model
+
+    if model_name == 'vgg19':
+        # Download the model
+        model = models.vgg19(weights=VGG19_Weights.IMAGENET1K_V1)
+        # Replace the model classifier
+        model.fc = create_classifier(2048, output_size, hidden_layers)
+
+        return model
+
+    return None

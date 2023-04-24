@@ -11,9 +11,11 @@ from flask import Flask, request, render_template
 from PIL import Image
 from torchvision import models
 
-import torch.nn as nn
 import torchvision.transforms as transforms
 import torch
+from torchvision.models import VGG19_Weights
+
+from pytorch.model.net.model_net import Net
 
 app = Flask(__name__)
 
@@ -22,7 +24,13 @@ app = Flask(__name__)
 '''
 
 # 类别
-data_classes = ['丰花月季', '切花月季', '大花月季']
+data_classes = ['0', '1', '10', '100', '101', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2', '20', '21',
+                '22', '23', '24', '25', '26', '27', '28', '29', '3', '30', '31', '32', '33', '34', '35', '36', '37',
+                '38', '39', '4', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '5', '50', '51', '52',
+                '53', '54', '55', '56', '57', '58', '59', '6', '60', '61', '62', '63', '64', '65', '66', '67', '68',
+                '69', '7', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '8', '80', '81', '82', '83',
+                '84', '85', '86', '87', '88', '89', '9', '90', '91', '92', '93', '94', '95', '96', '97', '98', '99',
+                '月季']
 
 # 选择CPU还是GPU的操作
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -36,13 +44,8 @@ test_transform = transforms.Compose([
 
 # 选择模型
 
-net = models.vgg19()
-net.classifier = nn.Sequential(nn.Linear(25088, 4096),  # vgg19
-                               nn.ReLU(),
-                               nn.Linear(4096, 4096),
-                               nn.ReLU(),
-                               nn.Dropout(p=0.5),
-                               nn.Linear(4096, 8))
+vgg = models.vgg19(weights=VGG19_Weights.IMAGENET1K_V1)
+net = Net(vgg)
 net.load_state_dict(torch.load('../flower_net_VGG19.pth'))
 net.eval()
 net.to(device)
@@ -85,8 +88,8 @@ def get_prediction_results(img_list):
                 'is_fn': is_fn
             }
             results.append(result)
-        except:
-            print("a")
+        except Exception as e:
+            print(e)
     return results
 
 

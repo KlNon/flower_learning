@@ -5,27 +5,64 @@
 @Author  ：KlNon
 @Date    ：2023/3/29 22:07 
 """
+from matplotlib import pyplot as plt
+from torch import nn
+
 from pytorch.model.args import *
 
 classes = data_classes
 
 
-def modelTest(net):
-    from main import device
-    # 在测试集上评估模型
-    correct = 0
-    total = 0
-    net.eval()
+def modelTest(dataloader=dataloaders['test_data'], show_graphs=True):
+    #####################
+    #       TEST        #
+    #####################
+    criterion = nn.NLLLoss()
+    test_loss = 0
+    accuracy = 0
+    top_class_graph = []
+    labels_graph = []
+    # Set model to evaluation mode
+    model.eval()
     with torch.no_grad():
-        for data in test_loader:
-            if device.type == 'cuda':
-                images, labels = data[0].to(device), data[1].to(device)
-            else:
-                images, labels = data
-            outputs = net(images)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+        for images, labels in dataloader:
+            labels_graph.extend(labels)
 
-    print('Accuracy of the network on the test images: %d %%' % (
-            100 * correct / total))
+            # Move tensors to device
+            images, labels = images.to(device), labels.to(device)
+
+            # Get predictions for this test batch
+            output = model(images)
+
+            # Calculate loss for this test batch
+            batch_loss = criterion(output, labels)
+            # Track validation loss
+            test_loss += batch_loss.item() * len(images)
+
+            # Calculate accuracy
+            output = torch.exp(output)
+            top_ps, top_class = output.topk(1, dim=1)
+            top_class_graph.extend(top_class.view(-1).to('cpu').numpy())
+            equals = top_class == labels.view(*top_class.shape)
+            accuracy += torch.sum(equals.type(torch.FloatTensor)).item()
+
+    #####################
+    #     PRINT LOG     #
+    #####################
+
+    # calculate average losses
+    test_loss = test_loss / len(dataloader.dataset)
+    accuracy = accuracy / len(dataloader.dataset)
+
+    # print training/validation statistics
+    log = f'Test Loss: {test_loss:.6f}\t\
+           Test accuracy: {(accuracy * 100):.2f}%'
+    print(log)
+
+    if show_graphs:
+        plt.figure(figsize=(25, 13))
+        plt.plot(np.array(labels_graph), 'k.')
+        plt.plot(np.array(top_class_graph), 'r.')
+        plt.show()
+
+        plt.show()
