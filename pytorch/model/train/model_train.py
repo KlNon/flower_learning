@@ -28,8 +28,6 @@ def modelTrain(epochs, model, optimizers, criterion, device, dataloader,
         state_dict['trace_valid_loss'].append(valid_loss)
         state_dict['trace_accuracy'].append(accuracy)
 
-
-
     if state_dict is None:
         # Initialize state_dict if not provided
         state_dict = {

@@ -25,6 +25,7 @@ normalize_mean = np.array([0.485, 0.456, 0.406])
 normalize_std = np.array([0.229, 0.224, 0.225])
 
 batch_size = 40
+num_worker = 4
 learning_rate = 0.001
 
 output_size = 103
@@ -84,11 +85,11 @@ image_datasets = {'train_data': datasets.ImageFolder(data_dir + 'train',
 # Using the image datasets and the transforms, define the dataloaders
 dataloaders = {
     'train_data': torch.utils.data.DataLoader(image_datasets['train_data'], batch_size=batch_size, shuffle=True,
-                                              num_workers=12),
+                                              num_workers=num_worker),
     'valid_data': torch.utils.data.DataLoader(image_datasets['valid_data'], batch_size=batch_size, shuffle=True,
-                                              num_workers=12),
+                                              num_workers=num_worker),
     'test_data': torch.utils.data.DataLoader(image_datasets['test_data'], batch_size=batch_size, shuffle=True,
-                                             num_workers=12)}
+                                             num_workers=num_worker)}
 
 # print(f"Train data: {len(dataloaders['train_data'].dataset)} images / {len(dataloaders['train_data'])} batches")
 # print(f"Valid data: {len(dataloaders['valid_data'].dataset)} images / {len(dataloaders['valid_data'])} batches")
