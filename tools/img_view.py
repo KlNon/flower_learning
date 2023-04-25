@@ -1,13 +1,13 @@
 """
 @Project ：.ProjectCode 
 @File    ：img_view
-@Describe：
+@Describe：图片展示
 @Author  ：KlNon
 @Date    ：2023/4/24 12:53 
 """
 import numpy as np
 
-from pytorch.model.args import normalize_std, normalize_mean
+from pytorch.model.data_config import normalize_std, normalize_mean
 
 
 def imgview(img, title, ax):

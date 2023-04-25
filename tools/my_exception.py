@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：my_exception
-@Describe：
+@Describe：学习异常时候用到的
 @Author  ：KlNon
 @Date    ：2023/3/13 22:55 
 """

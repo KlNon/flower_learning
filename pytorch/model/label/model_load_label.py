@@ -7,7 +7,7 @@
 """
 import json
 
-from pytorch.model.args import image_datasets
+from pytorch.model.data_config import image_datasets
 
 with open('E:/.GraduationProject/ProjectCode/pytorch/model/label/cat_to_name.json', 'r') as f:
     cat_to_name = json.load(f)

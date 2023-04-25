@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：to_jpeg
-@Describe：
+@Describe：转换图片格式为jpg
 @Author  ：KlNon
 @Date    ：2023/3/29 17:21 
 """

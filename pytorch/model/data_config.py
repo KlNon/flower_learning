@@ -16,21 +16,22 @@ from torch.utils.data import DataLoader
 
 from pytorch.model.net.model_net import create_network
 
-PATH = './flower_net_VGG19.pth'
+# PATH = './flower_net_VGG19.pth'
+model_name = 'resnet50'
 gdrive_dir = 'E:/.GraduationProject/ProjectCode/checkpoint/'
-batch_size = 40
-learning_rate = 0.001
 normalize_mean = np.array([0.485, 0.456, 0.406])
 normalize_std = np.array([0.229, 0.224, 0.225])
+
+batch_size = 40
+learning_rate = 0.001
+
+output_size = 103
+hidden_layers = [1000]
 
 # 使用GPU运算,切换运算设备
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # print(f'Running on: {str(device).upper()}')
 
-# Define hyperparameters
-model_name = 'resnet50'
-output_size = 103
-hidden_layers = [1000]
 
 model = create_network(model_name, output_size, hidden_layers)
 
@@ -93,4 +94,3 @@ dataloaders = {
 
 # 类别为训练集的类别
 data_classes = image_datasets['train_data'].classes
-

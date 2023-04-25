@@ -8,7 +8,7 @@
 
 import torch.nn as nn
 
-from pytorch.model.args import *
+from pytorch.model.data_config import *
 from pytorch.model.label.model_load_label import class_to_idx, cat_label_to_name
 
 model.to(device)

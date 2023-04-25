@@ -10,63 +10,52 @@ import torch
 from matplotlib import pyplot as plt
 from torch import nn
 
-from pytorch.model.args import data_classes, dataloaders, device
+from pytorch.model.data_config import data_classes, dataloaders, device
 
 classes = data_classes
 
 
-def modelTest(model, dataloader=dataloaders['test_data'], show_graphs=True):
-    #####################
-    #       TEST        #
-    #####################
-    criterion = nn.NLLLoss()
-    test_loss = 0
+def evaluate(model, criterion, dataloader):
+    loss = 0
     accuracy = 0
     top_class_graph = []
     labels_graph = []
-    # Set model to evaluation mode
-    model.eval()
+
     with torch.no_grad():
         for images, labels in dataloader:
             labels_graph.extend(labels)
-
-            # Move tensors to device
             images, labels = images.to(device), labels.to(device)
-
-            # Get predictions for this test batch
             output = model(images)
-
-            # Calculate loss for this test batch
             batch_loss = criterion(output, labels)
-            # Track validation loss
-            test_loss += batch_loss.item() * len(images)
-
-            # Calculate accuracy
+            loss += batch_loss.item() * len(images)
             output = torch.exp(output)
             top_ps, top_class = output.topk(1, dim=1)
             top_class_graph.extend(top_class.view(-1).to('cpu').numpy())
             equals = top_class == labels.view(*top_class.shape)
             accuracy += torch.sum(equals.type(torch.FloatTensor)).item()
 
-    #####################
-    #     PRINT LOG     #
-    #####################
+    return loss / len(dataloader.dataset), accuracy / len(dataloader.dataset), top_class_graph, labels_graph
 
-    # calculate average losses
-    test_loss = test_loss / len(dataloader.dataset)
-    accuracy = accuracy / len(dataloader.dataset)
 
-    # print training/validation statistics
-    log = f'Test Loss: {test_loss:.6f}\t\
-           Test accuracy: {(accuracy * 100):.2f}%'
+def save_graph(filename, labels_graph, top_class_graph):
+    plt.figure(figsize=(25, 13))
+    plt.plot(np.array(labels_graph), 'k.')
+    plt.plot(np.array(top_class_graph), 'r.')
+    plt.savefig(filename)
+    plt.close()
+
+
+def modelTest(model, dataloader=dataloaders['test_data'], show_graphs=True, save_graphs=True):
+    model.eval()
+    criterion = nn.NLLLoss()
+    test_loss, accuracy, top_class_graph, labels_graph = evaluate(model, criterion, dataloader)
+
+    log = f'Test Loss: {test_loss:.6f}\tTest accuracy: {(accuracy * 100):.2f}%'
     print(log)
 
-    if show_graphs:
-        plt.figure(figsize=(25, 13))
-        plt.plot(np.array(labels_graph), 'k.')
-        plt.plot(np.array(top_class_graph), 'r.')
-        # plt.show()
-        #
-        # plt.show()
-        plt.savefig('TestImg.png')
-        plt.close()
+    if show_graphs or save_graphs:
+        for i, (images, labels) in enumerate(dataloader):
+            if show_graphs:
+                save_graph(f'TestImg_batch_{i + 1}.png', labels_graph, top_class_graph)
+            if save_graphs:
+                save_graph(f'TestImg.png', labels_graph, top_class_graph)

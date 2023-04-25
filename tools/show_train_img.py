@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：show_train_img
-@Describe：
+@Describe：展示训练集中部分图片
 @Author  ：KlNon
 @Date    ：2023/4/24 12:55 
 """
@@ -9,7 +9,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from pytorch.model.args import dataloaders
+from pytorch.model.data_config import dataloaders
 from pytorch.model.label.model_load_label import cat_label_to_name
 from tools.img_view import imgview
 

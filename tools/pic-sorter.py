@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：pic-sorter
-@Describe：
+@Describe：当时自己做数据集的时候遗留下来的
 @Author  ：KlNon
 @Date    ：2023/3/13 16:55 
 """
