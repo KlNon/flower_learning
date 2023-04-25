@@ -17,6 +17,7 @@
       <excludeFolder url="file://$MODULE_DIR$/output_data" />
       <excludeFolder url="file://$MODULE_DIR$/PlantVillage-Dataset" />
       <excludeFolder url="file://$MODULE_DIR$/checkpoint2" />
+      <excludeFolder url="file://$MODULE_DIR$/oudated_logs" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (Torch)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

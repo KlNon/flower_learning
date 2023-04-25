@@ -28,11 +28,8 @@ if __name__ == '__main__':
     PHASE_THREE = 10
 
     TEST = True
-    state_dict = load_model(gdrive_dir + 'checkpoint_phase_two.pt', model)
-    model.to(device)
-
-    # 定义 fc_optimizer
-    fc_optimizer = torch.optim.Adagrad(model.fc.parameters(), lr=0.01, weight_decay=0.001)
+    # state_dict = load_model(gdrive_dir + 'checkpoint_phase_two.pt', model)
+    # model.to(device)
 
     # Define the phases
     if PHASE_ONE > 0:

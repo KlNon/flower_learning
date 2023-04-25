@@ -28,15 +28,7 @@ def modelTrain(epochs, model, optimizers, criterion, device, dataloader,
         state_dict['trace_valid_loss'].append(valid_loss)
         state_dict['trace_accuracy'].append(accuracy)
 
-    def update_lr_scheduler(valid_loss=None):
-        if isinstance(lr_scheduler, LRScheduler):
-            lr_scheduler.step()
-        elif isinstance(lr_scheduler, ReduceLROnPlateau):
-            if valid_loss is not None:
-                if lr_scheduler.min_lrs[0] == lr_scheduler.optimizer.param_groups[0]['lr']:
-                    return False
-                lr_scheduler.step(valid_loss)
-        return True
+
 
     if state_dict is None:
         # Initialize state_dict if not provided
@@ -52,9 +44,18 @@ def modelTrain(epochs, model, optimizers, criterion, device, dataloader,
         state_dict['trace_log'].append('PHASE ONE')
 
     for epoch in range(1, epochs + 1):
-        # Update learning rate scheduler
-        if not update_lr_scheduler():
-            break
+
+        try:
+            lr_scheduler.step()  # if instance of _LRScheduler
+        except TypeError:
+            try:
+                if lr_scheduler.min_lrs[0] == lr_scheduler.optimizer.param_groups[0]['lr']:
+                    break
+                lr_scheduler.step(valid_loss)  # if instance of ReduceLROnPlateau
+            except NameError:  # valid_loss is not defined yet
+                lr_scheduler.step(np.Inf)
+        except:
+            pass  # do nothing
 
         # Train model
         epoch_start_time = time.time()
