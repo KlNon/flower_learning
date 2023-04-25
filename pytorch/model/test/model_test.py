@@ -5,15 +5,17 @@
 @Author  ：KlNon
 @Date    ：2023/3/29 22:07 
 """
+import numpy as np
+import torch
 from matplotlib import pyplot as plt
 from torch import nn
 
-from pytorch.model.args import *
+from pytorch.model.args import data_classes, dataloaders, device
 
 classes = data_classes
 
 
-def modelTest(dataloader=dataloaders['test_data'], show_graphs=True):
+def modelTest(model, dataloader=dataloaders['test_data'], show_graphs=True):
     #####################
     #       TEST        #
     #####################
@@ -63,6 +65,8 @@ def modelTest(dataloader=dataloaders['test_data'], show_graphs=True):
         plt.figure(figsize=(25, 13))
         plt.plot(np.array(labels_graph), 'k.')
         plt.plot(np.array(top_class_graph), 'r.')
-        plt.show()
-
-        plt.show()
+        # plt.show()
+        #
+        # plt.show()
+        plt.savefig('TestImg.png')
+        plt.close()

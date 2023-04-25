@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 from pytorch.model.net.model_net import create_network
 
 PATH = './flower_net_VGG19.pth'
-gdrive_dir = './checkpoint/'
+gdrive_dir = 'E:/.GraduationProject/ProjectCode/checkpoint/'
 batch_size = 40
 learning_rate = 0.001
 normalize_mean = np.array([0.485, 0.456, 0.406])
@@ -93,3 +93,4 @@ dataloaders = {
 
 # 类别为训练集的类别
 data_classes = image_datasets['train_data'].classes
+
