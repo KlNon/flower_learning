@@ -19,6 +19,8 @@ from pytorch.model.net.model_net import create_network
 # PATH = './flower_net_VGG19.pth'
 model_name = 'resnet50'
 gdrive_dir = 'E:/.GraduationProject/ProjectCode/checkpoint/'
+gdrive_dir2 = 'E:/.GraduationProject/ProjectCode/checkpoint2/'
+data_dir = 'E:/.GraduationProject/ProjectCode/assets/'
 normalize_mean = np.array([0.485, 0.456, 0.406])
 normalize_std = np.array([0.229, 0.224, 0.225])
 
@@ -71,11 +73,11 @@ data_transforms = {'train': transforms.Compose([
 # transforms to valid data set
 
 # Load the datasets with ImageFolder
-image_datasets = {'train_data': datasets.ImageFolder('E:/.GraduationProject/ProjectCode/assets/train',
+image_datasets = {'train_data': datasets.ImageFolder(data_dir + 'train',
                                                      transform=data_transforms['train']),
-                  'valid_data': datasets.ImageFolder('E:/.GraduationProject/ProjectCode/assets/valid',
+                  'valid_data': datasets.ImageFolder(data_dir + 'valid',
                                                      transform=data_transforms['valid']),
-                  'test_data': datasets.ImageFolder('E:/.GraduationProject/ProjectCode/assets/test',
+                  'test_data': datasets.ImageFolder(data_dir + 'test',
                                                     transform=data_transforms['test'])}
 # 加载数据集 训练集,验证集,测试集
 

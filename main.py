@@ -5,16 +5,16 @@ from pytorch.model.test.model_test import modelTest
 
 # 按间距中的绿色按钮以运行脚本。
 
-def load_model(checkpoint_path, model, optimizers=None):
+def load_model(checkpoint_p, my_model, optim=None):
     try:
-        checkpoint = torch.load(checkpoint_path)
-        model.load_state_dict(checkpoint['model_state_dict'])
-        if optimizers is not None:
-            for i, optimizer in enumerate(optimizers):
+        checkpoint = torch.load(checkpoint_p)
+        my_model.load_state_dict(checkpoint['model_state_dict'])
+        if optim is not None:
+            for i, opt in enumerate(optim):
                 optimizer.load_state_dict(checkpoint[f'optimizer_state_dict_{i}'])
         state_dict = checkpoint['training_state_dict']
     except FileNotFoundError:
-        print(f"Checkpoint not found at {checkpoint_path}")
+        print(f"Checkpoint not found at {checkpoint_p}")
         return None
 
     return state_dict
@@ -23,7 +23,7 @@ def load_model(checkpoint_path, model, optimizers=None):
 if __name__ == '__main__':
 
     # Define how many times each phase will be running
-    PHASE_ONE = 0
+    PHASE_ONE = 100
     PHASE_TWO = 20
     PHASE_THREE = 10
 
