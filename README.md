@@ -8,48 +8,19 @@
 ├─.idea
 │  └─inspectionProfiles
 ├─assets
-│  ├─backups
-│  │  └─download
-│  │      ├─不精确的月季图片分类
-│  │      │  └─...
-│  │      ├─稍微精确的月季图片分类
-│  │      │  ├─test
-│  │      │  │  └─...
-│  │      │  └─train
-│  │      │      └─...
-│  │      └─经过标注的月季图片分类
-│  │          └─train
-│  │              └─...
-│  ├─outdated
-│  │  └─过时1
-│  │      ├─test
-│  │      │  └─...
-│  │      └─train
-│  │          └─...
-│  ├─test
-│  │  └─...
-│  └─train
-│      └─...
 ├─pytorch
-│  ├─data
-│  │  └─cifar-10-batches-py
 │  ├─datasets
-│  │  └─__pycache__
 │  └─model
 │      ├─net
-│      │  └─__pycache__
 │      ├─test
-│      │  └─__pycache__
 │      └─train
-│          └─__pycache__
-├─tools
-└─__pycache__
+└─tools
 
 ```
 
 其中:
 
-- assets 目录下是图像数据集，train 目录下是训练集，test 目录下是测试集。
+- assets 目录下是图像数据集，train 目录下是训练集，test 目录下是测试集,valid 是验证集。
 - pytorch 目录下存放了项目的 PyTorch 实现代码，其中的 model_net.py 定义了我们在本项目中使用的卷积神经网络模型。
 - main.py 中包含了项目的主要运行代码。
 
