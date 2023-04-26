@@ -5,16 +5,14 @@ from pytorch.model.test.model_test import modelTest
 
 # 按间距中的绿色按钮以运行脚本。
 
-def load_model(checkpoint_p, my_model, optim=None):
+def load_model(checkpoint_path, model, fc_optimizer):
     try:
-        checkpoint = torch.load(checkpoint_p)
-        my_model.load_state_dict(checkpoint['model_state_dict'])
-        if optim is not None:
-            for i, opt in enumerate(optim):
-                optimizer.load_state_dict(checkpoint[f'optimizer_state_dict_{i}'])
+        checkpoint = torch.load(checkpoint_path)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        fc_optimizer.load_state_dict(checkpoint[f'optimizer_state_dict'])
         state_dict = checkpoint['training_state_dict']
     except FileNotFoundError:
-        print(f"Checkpoint not found at {checkpoint_p}")
+        print(f"Checkpoint not found at {checkpoint_path}")
         return None
 
     return state_dict
@@ -23,12 +21,15 @@ def load_model(checkpoint_p, my_model, optim=None):
 if __name__ == '__main__':
 
     # Define how many times each phase will be running
-    PHASE_ONE = 100
+    PHASE_ONE = 0
     PHASE_TWO = 20
     PHASE_THREE = 10
 
+    # Define fc_optimizer
+    fc_optimizer = torch.optim.Adagrad(model.fc.parameters(), lr=0.01, weight_decay=0.001)
+
     TEST = True
-    # state_dict = load_model(gdrive_dir + 'checkpoint_phase_two.pt', model)
+    state_dict = load_model(gdrive_dir + 'checkpoint_phase_one.pt', model, fc_optimizer)
     # model.to(device)
 
     # Define the phases
@@ -51,7 +52,7 @@ if __name__ == '__main__':
 
         print(*state_dict['trace_log'], sep="\n")
 
-        state_dict = load_model(checkpoint_path, model, optimizers)
+        state_dict = load_model(checkpoint_path, model, fc_optimizer)
 
     if PHASE_TWO > 0:
         state_dict['trace_log'].append('PHASE TWO')
@@ -69,7 +70,7 @@ if __name__ == '__main__':
 
         print(*state_dict['trace_log'], sep="\n")
 
-        state_dict = load_model(checkpoint_path, model, optimizers)
+        state_dict = load_model(checkpoint_path, model, fc_optimizer)
 
     if PHASE_THREE > 0:
         state_dict['trace_log'].append('PHASE THREE')
@@ -89,7 +90,7 @@ if __name__ == '__main__':
 
         print(*state_dict['trace_log'], sep="\n")
 
-        state_dict = load_model(checkpoint_path, model, optimizers)
+        state_dict = load_model(checkpoint_path, model, fc_optimizer)
 
     if TEST:
         modelTest(model)
