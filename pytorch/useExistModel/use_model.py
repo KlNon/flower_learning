@@ -12,7 +12,7 @@ from pytorch.model.model_init import *
 from pytorch.model.test.model_test import modelTest
 from pytorch.useExistModel.img.img_show import imshow
 
-checkpoint_dir, data_dir, device, model, data_transforms, image_datasets, dataloaders, data_classes = initialize_model()
+model_name, output_size, hidden_layers, checkpoint_dir, data_dir, device, model, data_transforms, image_datasets, dataloaders, data_classes = initialize_model()
 cat_label_to_name, class_to_idx = load_labels(image_datasets)
 
 
@@ -60,7 +60,7 @@ def main():
 
             plt.show()
 
-    modelTest(model, show_graphs=True)
+    modelTest(model, dataloaders, device, show_graphs=True)
 
 
 if __name__ == '__main__':

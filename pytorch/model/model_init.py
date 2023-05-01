@@ -26,8 +26,8 @@ def initialize_model(model_name='resnet50', which_file='Kind', which_model='chec
     if hidden_layers is None:
         hidden_layers = [1000]
     if return_params is None:
-        return_params = ['checkpoint_dir', 'data_dir', 'device', 'model', 'data_transforms', 'image_datasets',
-                         'dataloaders', 'data_classes']
+        return_params = ['model_name', 'output_size', 'hidden_layers', 'checkpoint_dir', 'data_dir', 'device', 'model',
+                         'data_transforms', 'image_datasets', 'dataloaders', 'data_classes']
 
     # PATH = './flower_net_VGG19.pth'
     normalize_mean = np.array([0.485, 0.456, 0.406])
@@ -103,6 +103,9 @@ def initialize_model(model_name='resnet50', which_file='Kind', which_model='chec
     data_classes = image_datasets['train_data'].classes
 
     all_params = {
+        'model_name': model_name,
+        'output_size': output_size,
+        'hidden_layers': hidden_layers,
         'checkpoint_dir': checkpoint_dir,
         'data_dir': data_dir,
         'device': device,

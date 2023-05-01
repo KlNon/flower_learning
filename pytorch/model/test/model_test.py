@@ -10,6 +10,7 @@ import torch
 from matplotlib import pyplot as plt
 from torch import nn
 
+
 def evaluate(model, criterion, dataloader, device):
     loss = 0
     accuracy = 0

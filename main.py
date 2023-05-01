@@ -6,10 +6,10 @@ from pytorch.model.test.model_test import modelTest
 
 # 按间距中的绿色按钮以运行脚本。
 
-def load_model(checkpoint_path, model, fc_optimizer):
+def load_model(checkpoint_path, use_model, fc_optimizer):
     try:
         checkpoint = torch.load(checkpoint_path)
-        model.load_state_dict(checkpoint['model_state_dict'])
+        use_model.load_state_dict(checkpoint['model_state_dict'])
         fc_optimizer.load_state_dict(checkpoint[f'optimizer_state_dict'])
         state_dict = checkpoint['training_state_dict']
     except FileNotFoundError:
@@ -19,7 +19,7 @@ def load_model(checkpoint_path, model, fc_optimizer):
     return state_dict
 
 
-def Main(checkpoint_path, use_device, use_model, dataloader):
+def Main(checkpoint_path, use_device, use_model, dataloader, state_dict=None):
     # Define how many times each phase will be running
     PHASE_ONE = 100
     PHASE_TWO = 20
@@ -96,12 +96,13 @@ def Main(checkpoint_path, use_device, use_model, dataloader):
     if TEST:
         modelTest(use_model, dataloader=dataloader['test_data'], device=use_device)
 
-    save_checkpoint(checkpoint_path + 'checkpoint.pt')
+    save_checkpoint(model_name, output_size, hidden_layers, model, class_to_idx, cat_label_to_name,
+                    checkpoint_path + 'checkpoint.pt')
 
 
 if __name__ == '__main__':
     # 数据初始化
-    checkpoint_dir, data_dir, device, model, data_transforms, image_datasets, dataloaders, data_classes = initialize_model()
+    model_name, output_size, hidden_layers, checkpoint_dir, data_dir, device, model, data_transforms, image_datasets, dataloaders, data_classes = initialize_model()
     cat_label_to_name, class_to_idx = load_labels(image_datasets)
     criterion, optimizer = init_cri_opti(model)
     # 分类的模型

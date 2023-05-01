@@ -6,13 +6,10 @@
 @Date    ：2023/4/25 14:28 
 """
 import numpy as np
-from matplotlib import pyplot as plt
-
-import numpy as np
 import matplotlib.pyplot as plt
 
 
-def imshow(image, ax=None, title=None, titlecolor='k'):
+def imshow(image, ax=None, title=None, title_color='k'):
     """Imshow for Tensor."""
     if ax is None:
         fig, ax = plt.subplots()
@@ -32,7 +29,7 @@ def imshow(image, ax=None, title=None, titlecolor='k'):
     ax.imshow(image)
     ax.grid(False)
     if title:
-        ax.set_title(title, color=titlecolor)
+        ax.set_title(title, color=title_color)
 
     plt.show(block=True)
     return ax
