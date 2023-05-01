@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：model_classifier
-@Describe：
+@Describe：创建网络之中的分类器(classifier)
 @Author  ：KlNon
 @Date    ：2023/4/24 12:45 
 """

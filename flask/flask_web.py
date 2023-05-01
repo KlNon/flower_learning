@@ -1,12 +1,12 @@
 """
 @Project ：.ProjectCode
 @File    ：flask
-@Describe：
+@Describe：网页,已弃用,当时用于可视化测试集,但现在用matplotlib更好
 @Author  ：KlNon
 @Date    ：2023/4/13 16:41
 """
 import os
-
+# -----------------------------------已弃用-----------------------------------
 from flask import Flask, request, render_template
 from PIL import Image
 from torchvision import models
@@ -14,8 +14,6 @@ from torchvision import models
 import torchvision.transforms as transforms
 import torch
 from torchvision.models import VGG19_Weights
-
-from pytorch.model.net.model_net import Net
 
 app = Flask(__name__)
 

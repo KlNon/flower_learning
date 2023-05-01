@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
-@File    ：args
-@Describe：
+@File    ：model_init
+@Describe：模型初始化
 @Author  ：KlNon
 @Date    ：2023/4/13 19:54 
 """

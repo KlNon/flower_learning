@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：use_model
-@Describe：
+@Describe：使用matplotlib库可视化测试模型
 @Author  ：KlNon
 @Date    ：2023/4/24 22:42
 """
@@ -51,7 +51,7 @@ def main():
 
                 true_label = cat_label_to_name[label.item()].title()
                 title_color = 'g' if true_label == cat_label_to_name[class_indices[0].item()].title() else 'r'
-
+                # TODO 此处仍有BUG,找个时间准备修,图片显示不全,数组越界
                 ax_image = axes[line * 2, row]
                 imshow(image, ax_image, true_label, title_color)
 

@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：model_test
-@Describe：
+@Describe：测试模型正确率
 @Author  ：KlNon
 @Date    ：2023/3/29 22:07 
 """

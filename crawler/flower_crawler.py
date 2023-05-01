@@ -1,19 +1,16 @@
 """
 @Project ：.ProjectCode 
 @File    ：flower_crawler
-@Describe：
+@Describe：爬虫,爬取classes种的关键词的图片
 @Author  ：KlNon
 @Date    ：2023/4/13 20:27 
 """
 import re
 
-from lxml import etree
-
 import requests
 import os
 import time
 import urllib3
-from bs4 import BeautifulSoup
 import sys
 
 sys.setrecursionlimit(1000000)  # 设置递归深度限制为 1000000

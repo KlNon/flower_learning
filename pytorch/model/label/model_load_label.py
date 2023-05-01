@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：model_load_label
-@Describe：
+@Describe：读取json文件,将其序号与具体内容对应
 @Author  ：KlNon
 @Date    ：2023/4/24 12:49 
 """

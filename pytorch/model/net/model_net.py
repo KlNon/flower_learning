@@ -1,4 +1,10 @@
-import torch.nn as nn
+"""
+@Project ：.ProjectCode
+@File    ：model_classifier
+@Describe：创建网络
+@Author  ：KlNon
+@Date    ：2023/4/24 12:45
+"""
 
 from torchvision import models
 

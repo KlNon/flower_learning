@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：model_train
-@Describe：在训练过程中也进行测试
+@Describe：训练模型,同时也验证模型(与直接测试不同,验证模型会影响到模型)
 @Author  ：KlNon
 @Date    ：2023/3/29 22:03
 """
