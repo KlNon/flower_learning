@@ -12,7 +12,6 @@ import time
 
 import numpy as np
 import torch
-from torch.optim.lr_scheduler import LRScheduler, ReduceLROnPlateau
 
 
 def modelTrain(epochs, model, optimizers, criterion, device, dataloader,

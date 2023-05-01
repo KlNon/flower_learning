@@ -10,12 +10,7 @@ import torch
 from matplotlib import pyplot as plt
 from torch import nn
 
-from pytorch.model.data_config import data_classes, dataloaders, device
-
-classes = data_classes
-
-
-def evaluate(model, criterion, dataloader):
+def evaluate(model, criterion, dataloader, device):
     loss = 0
     accuracy = 0
     top_class_graph = []
@@ -45,10 +40,10 @@ def save_graph(filename, labels_graph, top_class_graph):
     plt.close()
 
 
-def modelTest(model, dataloader=dataloaders['test_data'], show_graphs=True, save_graphs=True):
+def modelTest(model, dataloader, device, show_graphs=True, save_graphs=True):
     model.eval()
     criterion = nn.NLLLoss()
-    test_loss, accuracy, top_class_graph, labels_graph = evaluate(model, criterion, dataloader)
+    test_loss, accuracy, top_class_graph, labels_graph = evaluate(model, criterion, dataloader, device)
 
     log = f'Test Loss: {test_loss:.6f}\tTest accuracy: {(accuracy * 100):.2f}%'
     print(log)
@@ -56,6 +51,6 @@ def modelTest(model, dataloader=dataloaders['test_data'], show_graphs=True, save
     if show_graphs or save_graphs:
         for i, (images, labels) in enumerate(dataloader):
             if show_graphs:
-                save_graph(f'TestImg_batch_{i + 1}.png', labels_graph, top_class_graph)
+                save_graph(f'output_data/test/TestImg_batch_{i + 1}.png', labels_graph, top_class_graph)
             if save_graphs:
-                save_graph(f'TestImg.png', labels_graph, top_class_graph)
+                save_graph(f'output_data/testTestImg.png', labels_graph, top_class_graph)

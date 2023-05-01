@@ -13,11 +13,15 @@ from shutil import copy2
 # 比例
 scale = [0.6, 0.2, 0.2]
 
+which_file = 'Diseases'
+
 # 类别
-classes = ['月季']
+classes = ['Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
+           'Cherry_(including_sour)___healthy', 'Cherry_(including_sour)___Powdery_mildew', 'Strawberry___healthy',
+           'Strawberry___Leaf_scorch']
 
 for each in classes:
-    datadir_normal = "./../assets/data/" + each + "/"  # 原文件夹
+    datadir_normal = "./../assets/" + which_file + "/data/" + each + "/"  # 原文件夹
 
     all_data = os.listdir(datadir_normal)  # （图片文件夹）
     num_all_data = len(all_data)
@@ -27,15 +31,15 @@ for each in classes:
     random.shuffle(index_list)
     num = 0
 
-    trainDir = "./../assets/train/" + each  # （将训练集放在这个文件夹下）
+    trainDir = "./../assets/" + which_file + "/train/" + each  # （将训练集放在这个文件夹下）
     if not os.path.exists(trainDir):  # 如果不存在这个文件夹，就创造一个
         os.makedirs(trainDir)
 
-    validDir = "./../assets/valid/" + each  # （将验证集放在这个文件夹下）
+    validDir = "./../assets/" + which_file + "/valid/" + each  # （将验证集放在这个文件夹下）
     if not os.path.exists(validDir):
         os.makedirs(validDir)
 
-    testDir = "./../assets/test/" + each  # （将测试集放在这个文件夹下）
+    testDir = "./../assets/" + which_file + "/test/" + each  # （将测试集放在这个文件夹下）
     if not os.path.exists(testDir):
         os.makedirs(testDir)
 

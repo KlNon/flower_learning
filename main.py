@@ -1,4 +1,5 @@
-from pytorch.model.init import *
+from pytorch.model.model_init import *
+from pytorch.model.label.model_load_label import load_labels
 from pytorch.model.train.model_train import modelTrain
 from pytorch.model.test.model_test import modelTest
 
@@ -18,81 +19,99 @@ def load_model(checkpoint_path, model, fc_optimizer):
     return state_dict
 
 
-if __name__ == '__main__':
-
+def Main(checkpoint_path, use_device, use_model, dataloader):
     # Define how many times each phase will be running
-    PHASE_ONE = 0
+    PHASE_ONE = 100
     PHASE_TWO = 20
     PHASE_THREE = 10
 
     # Define fc_optimizer
-    fc_optimizer = torch.optim.Adagrad(model.fc.parameters(), lr=0.01, weight_decay=0.001)
+    fc_optimizer = torch.optim.Adagrad(use_model.fc.parameters(), lr=0.01, weight_decay=0.001)
 
     TEST = True
-    state_dict = load_model(gdrive_dir + 'checkpoint_phase_one.pt', model, fc_optimizer)
+    # state_dict = load_model(checkpoint_dir + 'checkpoint_phase_one.pt', model, fc_optimizer)
     # model.to(device)
 
     # Define the phases
     if PHASE_ONE > 0:
-        freeze_parameters(model)
-        freeze_parameters(model.fc, False)
+        freeze_parameters(use_model)
+        freeze_parameters(use_model.fc, False)
 
-        fc_optimizer = torch.optim.Adagrad(model.fc.parameters(), lr=0.01, weight_decay=0.001)
+        fc_optimizer = torch.optim.Adagrad(use_model.fc.parameters(), lr=0.01, weight_decay=0.001)
         optimizers = [fc_optimizer]
 
         lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(fc_optimizer, mode='min',
                                                                   factor=0.1, patience=5,
                                                                   threshold=0.01, min_lr=0.00001)
 
-        checkpoint_path = gdrive_dir + "checkpoint_phase_one.pt"
+        checkpoint_path = checkpoint_path + "checkpoint_phase_one.pt"
 
-        state_dict = modelTrain(PHASE_ONE, model, optimizers, criterion, device, dataloaders, lr_scheduler=lr_scheduler,
+        state_dict = modelTrain(PHASE_ONE, use_model, optimizers, criterion, use_device, dataloader,
+                                lr_scheduler=lr_scheduler,
                                 state_dict=None, accuracy_target=None,
                                 checkpoint_path=checkpoint_path)
 
         print(*state_dict['trace_log'], sep="\n")
 
-        state_dict = load_model(checkpoint_path, model, fc_optimizer)
+        state_dict = load_model(checkpoint_path, use_model, fc_optimizer)
 
     if PHASE_TWO > 0:
         state_dict['trace_log'].append('PHASE TWO')
 
-        freeze_parameters(model, False)
+        freeze_parameters(use_model, False)
 
-        conv_optimizer = torch.optim.Adagrad(model.parameters(), lr=0.0001, weight_decay=0.001)
+        conv_optimizer = torch.optim.Adagrad(use_model.parameters(), lr=0.0001, weight_decay=0.001)
         optimizers = [fc_optimizer, conv_optimizer]
 
-        checkpoint_path = gdrive_dir + "checkpoint_phase_two.pt"
+        checkpoint_path = checkpoint_path + "checkpoint_phase_two.pt"
 
-        state_dict = modelTrain(PHASE_TWO, model, optimizers, criterion, device, dataloaders, lr_scheduler=None,
+        state_dict = modelTrain(PHASE_TWO, use_model, optimizers, criterion, use_device, dataloader, lr_scheduler=None,
                                 state_dict=state_dict, accuracy_target=None,
                                 checkpoint_path=checkpoint_path)
 
         print(*state_dict['trace_log'], sep="\n")
 
-        state_dict = load_model(checkpoint_path, model, fc_optimizer)
+        state_dict = load_model(checkpoint_path, use_model, fc_optimizer)
 
     if PHASE_THREE > 0:
         state_dict['trace_log'].append('PHASE THREE')
 
-        freeze_parameters(model)
-        freeze_parameters(model.fc, False)
+        freeze_parameters(use_model)
+        freeze_parameters(use_model.fc, False)
 
         optimizers = [fc_optimizer]
 
         lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(fc_optimizer, milestones=[0], gamma=0.01)
 
-        checkpoint_path = gdrive_dir + "checkpoint_phase_three.pt"
+        checkpoint_path = checkpoint_path + "checkpoint_phase_three.pt"
 
-        state_dict = modelTrain(PHASE_THREE, model, optimizers, criterion, device, dataloaders,
+        state_dict = modelTrain(PHASE_THREE, use_model, optimizers, criterion, use_device, dataloader,
                                 lr_scheduler=lr_scheduler, state_dict=state_dict, accuracy_target=None,
                                 checkpoint_path=checkpoint_path)
 
         print(*state_dict['trace_log'], sep="\n")
 
-        state_dict = load_model(checkpoint_path, model, fc_optimizer)
+        state_dict = load_model(checkpoint_path, use_model, fc_optimizer)
 
     if TEST:
-        modelTest(model)
+        modelTest(use_model, dataloader=dataloader['test_data'], device=use_device)
 
-    save_checkpoint(gdrive_dir + 'checkpoint.pt')
+    save_checkpoint(checkpoint_path + 'checkpoint.pt')
+
+
+if __name__ == '__main__':
+    # 数据初始化
+    checkpoint_dir, data_dir, device, model, data_transforms, image_datasets, dataloaders, data_classes = initialize_model()
+    cat_label_to_name, class_to_idx = load_labels(image_datasets)
+    criterion, optimizer = init_cri_opti(model)
+    # 分类的模型
+    Main(checkpoint_dir, device, model, dataloaders)
+
+    # 数据初始化
+    checkpoint_dir, device, model, image_datasets, dataloaders = initialize_model(
+        which_file='Diseases',
+        which_model='checkpoint1',
+        return_params=['checkpoint_dir', 'device', 'model', 'image_datasets', 'dataloaders'])
+
+    # 病虫害的模型
+    Main(checkpoint_dir, device, model, dataloaders)

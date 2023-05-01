@@ -13,11 +13,11 @@
       <excludeFolder url="file://$MODULE_DIR$/pytorch/data" />
       <excludeFolder url="file://$MODULE_DIR$/crawler/roses" />
       <excludeFolder url="file://$MODULE_DIR$/flask/img" />
-      <excludeFolder url="file://$MODULE_DIR$/checkpoint" />
       <excludeFolder url="file://$MODULE_DIR$/output_data" />
       <excludeFolder url="file://$MODULE_DIR$/PlantVillage-Dataset" />
-      <excludeFolder url="file://$MODULE_DIR$/checkpoint2" />
       <excludeFolder url="file://$MODULE_DIR$/oudated_logs" />
+      <excludeFolder url="file://$MODULE_DIR$/checkpoint1" />
+      <excludeFolder url="file://$MODULE_DIR$/checkpoint" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (Torch)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

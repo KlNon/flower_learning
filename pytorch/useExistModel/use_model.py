@@ -5,15 +5,15 @@
 @Author  ：KlNon
 @Date    ：2023/4/24 22:42
 """
-import numpy as np
-import torch
 from matplotlib import pyplot as plt
 
-from pytorch.model.data_config import gdrive_dir, device, dataloaders
-from pytorch.model.init import load_checkpoint
-from pytorch.model.label.model_load_label import cat_label_to_name
+from pytorch.model.label.model_load_label import load_labels
+from pytorch.model.model_init import *
 from pytorch.model.test.model_test import modelTest
 from pytorch.useExistModel.img.img_show import imshow
+
+checkpoint_dir, data_dir, device, model, data_transforms, image_datasets, dataloaders, data_classes = initialize_model()
+cat_label_to_name, class_to_idx = load_labels(image_datasets)
 
 
 def plot_bar(ax_bar, prob, class_indices):
@@ -27,7 +27,7 @@ def plot_bar(ax_bar, prob, class_indices):
 
 
 def main():
-    model = load_checkpoint(gdrive_dir + 'checkpoint.pt')
+    model = load_checkpoint(checkpoint_dir + 'checkpoint.pt')
     model.to(device)
     model.eval()
 
@@ -58,7 +58,7 @@ def main():
                 ax_bar = axes[line * 2 + 1, row]
                 plot_bar(ax_bar, prob, class_indices)
 
-            plt.show(block=True)
+            plt.show()
 
     modelTest(model, show_graphs=True)
 
