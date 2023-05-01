@@ -2,27 +2,13 @@
 
 该项目是对于蔷薇科植物生长的学习，使用了深度学习中的卷积神经网络 (CNN)，通过在训练集上训练模型，然后在测试集上评估模型在分类任务中的准确性。本项目使用 PyTorch 实现。
 
-## 项目结构
+## 项目介绍
 
 ```
-├─.idea
-│  └─inspectionProfiles
-├─assets
-├─pytorch
-│  ├─datasets
-│  └─model
-│      ├─net
-│      ├─test
-│      └─train
-└─tools
-
+本项目使用了102种经典的英国常见花朵的图片数据集,同时添加了作者自己收集到的月季花数据集并进行了图像分割.
+项目目前训练两个模型,一个是花朵种类识别,另一个是病虫害识别
 ```
 
-其中:
-
-- assets 目录下是图像数据集，train 目录下是训练集，test 目录下是测试集,valid 是验证集。
-- pytorch 目录下存放了项目的 PyTorch 实现代码，其中的 model_net.py 定义了我们在本项目中使用的卷积神经网络模型。
-- main.py 中包含了项目的主要运行代码。
 
 ## 使用方法
 
@@ -39,7 +25,11 @@ pip install -r requirements.txt
 3. 运行以下命令开始训练和测试模型。
 
 ```shell
+#训练模型
 python main.py
+
+#进行模型可视化测试
+python use_model.py
 ```
 
 ## 代码结构
