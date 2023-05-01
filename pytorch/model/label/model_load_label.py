@@ -8,8 +8,8 @@
 import json
 
 
-def load_labels(image_datasets):
-    with open('E:/.GraduationProject/ProjectCode/pytorch/model/label/cat_to_name.json', 'r') as f:
+def load_labels(image_datasets, file_name='cat_to_name.json'):
+    with open('E:/.GraduationProject/ProjectCode/pytorch/model/label/' + file_name, 'r') as f:
         cat_to_name = json.load(f)
 
     class_to_idx = image_datasets['train_data'].class_to_idx
