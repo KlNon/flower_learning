@@ -18,6 +18,9 @@ def modelTrain(epochs, model, optimizers, criterion, device, dataloader,
                lr_scheduler=None, state_dict=None,
                checkpoint_path="checkpoint.pt", accuracy_target=None,
                show_graphs=True):
+    split_path = checkpoint_path.split('/')
+    result = split_path[-2]
+
     def update_state_dict():
         nonlocal state_dict
         state_dict['elapsed_time'] += time.time() - epoch_start_time
@@ -123,7 +126,7 @@ def modelTrain(epochs, model, optimizers, criterion, device, dataloader,
             plt.figure(figsize=(25, 8))
             plt.plot(np.array(labels_graph), 'k.', label='true labels')
             plt.plot(np.array(top_class_graph), 'r.', label='guess labels')
-            plt.savefig('./output_data/Epoch_' + str(state_dict['epochs_trained']) + '_A.png')
+            plt.savefig('./output_data/' + result + '/Epoch_' + str(state_dict['epochs_trained']) + '_A.png')
             plt.close()
 
             plt.figure(figsize=(25, 5))
@@ -135,7 +138,7 @@ def modelTrain(epochs, model, optimizers, criterion, device, dataloader,
             plt.subplot(1, 2, 2)
             plt.plot(np.array(state_dict['trace_train_lr']), 'b', label='train loss')
 
-            plt.savefig('./output_data/Epoch_' + str(state_dict['epochs_trained']) + '_B.png')
+            plt.savefig('./output_data/' + result + '/Epoch_' + str(state_dict['epochs_trained']) + '_B.png')
             plt.close()
 
         # Stop training loop if accuracy_target has been reached

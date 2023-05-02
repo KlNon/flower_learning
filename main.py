@@ -44,12 +44,12 @@ def Main(checkpoint_dir_, device_, model_, dataloaders_, cat_label_to_name_, cla
                                                                   factor=0.1, patience=5,
                                                                   threshold=0.01, min_lr=0.00001)
 
-        checkpoint_dir_ = checkpoint_dir_ + "checkpoint_phase_one.pt"
+        checkpoint_path = checkpoint_dir_ + "checkpoint_phase_one.pt"
 
         state_dict = modelTrain(PHASE_ONE, model_, optimizers, criterion, device_, dataloaders_,
                                 lr_scheduler=lr_scheduler,
                                 state_dict=None, accuracy_target=None,
-                                checkpoint_path=checkpoint_dir_)
+                                checkpoint_path=checkpoint_path)
 
         print(*state_dict['trace_log'], sep="\n")
 
@@ -63,11 +63,11 @@ def Main(checkpoint_dir_, device_, model_, dataloaders_, cat_label_to_name_, cla
         conv_optimizer = torch.optim.Adagrad(model_.parameters(), lr=0.0001, weight_decay=0.001)
         optimizers = [fc_optimizer, conv_optimizer]
 
-        checkpoint_dir_ = checkpoint_dir_ + "checkpoint_phase_two.pt"
+        checkpoint_path = checkpoint_dir_ + "checkpoint_phase_two.pt"
 
         state_dict = modelTrain(PHASE_TWO, model_, optimizers, criterion, device_, dataloaders_, lr_scheduler=None,
                                 state_dict=state_dict, accuracy_target=None,
-                                checkpoint_path=checkpoint_dir_)
+                                checkpoint_path=checkpoint_path)
 
         print(*state_dict['trace_log'], sep="\n")
 
@@ -83,11 +83,11 @@ def Main(checkpoint_dir_, device_, model_, dataloaders_, cat_label_to_name_, cla
 
         lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(fc_optimizer, milestones=[0], gamma=0.01)
 
-        checkpoint_dir_ = checkpoint_dir_ + "checkpoint_phase_three.pt"
+        checkpoint_path = checkpoint_dir_ + "checkpoint_phase_three.pt"
 
         state_dict = modelTrain(PHASE_THREE, model_, optimizers, criterion, device_, dataloaders_,
                                 lr_scheduler=lr_scheduler, state_dict=state_dict, accuracy_target=None,
-                                checkpoint_path=checkpoint_dir_)
+                                checkpoint_path=checkpoint_path)
 
         print(*state_dict['trace_log'], sep="\n")
 
@@ -106,12 +106,13 @@ if __name__ == '__main__':
     cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='kind_cat_to_name.json')
     criterion, optimizer = init_cri_opti(model)
     # 分类的模型
-    Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx)
+    # Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx)
 
     # 数据初始化
     checkpoint_dir, device, model, image_datasets, dataloaders = initialize_model(
         which_file='Diseases',
         which_model='checkpoint1',
+        output_size=8,
         return_params=['checkpoint_dir', 'device', 'model', 'image_datasets', 'dataloaders'])
     # 读取json对应的label
     cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='diseases_cat_to_name.json')
