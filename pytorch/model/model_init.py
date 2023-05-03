@@ -17,11 +17,17 @@ from torch.utils.data import DataLoader
 
 from pytorch.model.net.model_net import create_network
 
+model_name_ = 'resnet50'
+checkpoint_base_ = 'E:/.GraduationProject/ProjectCode/'
+datasets_file = 'Kind'
+model_file = 'checkpoint'
+data_dir = 'E:/.GraduationProject/ProjectCode/assets/'
+
 
 # 保存辨别种类的模型时,存在checkpoint,病虫害的模型放在checkpoint1
-def initialize_model(model_name='resnet50', which_file='Kind', which_model='checkpoint',
-                     checkpoint_base='E:/.GraduationProject/ProjectCode/',
-                     data_dir_base='E:/.GraduationProject/ProjectCode/assets/', batch_size=40, num_worker=4,
+def initialize_model(model_name=model_name_, which_file=datasets_file, which_model=model_file,
+                     checkpoint_base=checkpoint_base_,
+                     data_dir_base=data_dir, batch_size=40, num_worker=4,
                      output_size=103, hidden_layers=None, return_params=None):
     if hidden_layers is None:
         hidden_layers = [1000]

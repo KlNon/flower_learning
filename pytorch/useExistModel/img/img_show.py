@@ -31,5 +31,5 @@ def imshow(image, ax=None, title=None, title_color='k'):
     if title:
         ax.set_title(title, color=title_color)
 
-    plt.show(block=True)
+    # plt.show()
     return ax

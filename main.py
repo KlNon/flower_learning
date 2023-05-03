@@ -53,7 +53,7 @@ def Main(checkpoint_dir_, device_, model_, dataloaders_, cat_label_to_name_, cla
 
         print(*state_dict['trace_log'], sep="\n")
 
-        state_dict = load_model(checkpoint_dir_, model_, fc_optimizer)
+        state_dict = load_model(checkpoint_path, model_, fc_optimizer)
 
     if PHASE_TWO > 0:
         state_dict['trace_log'].append('PHASE TWO')
@@ -71,7 +71,7 @@ def Main(checkpoint_dir_, device_, model_, dataloaders_, cat_label_to_name_, cla
 
         print(*state_dict['trace_log'], sep="\n")
 
-        state_dict = load_model(checkpoint_dir_, model_, fc_optimizer)
+        state_dict = load_model(checkpoint_path, model_, fc_optimizer)
 
     if PHASE_THREE > 0:
         state_dict['trace_log'].append('PHASE THREE')
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='kind_cat_to_name.json')
     criterion, optimizer = init_cri_opti(model)
     # 分类的模型
-    # Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx)
+    Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx)
 
     # 数据初始化
     checkpoint_dir, device, model, image_datasets, dataloaders = initialize_model(
