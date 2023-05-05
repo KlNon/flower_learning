@@ -19,11 +19,9 @@ def load_model(checkpoint_path, use_model, fc_optimizer):
     return state_dict
 
 
-def Main(checkpoint_dir_, device_, model_, dataloaders_, cat_label_to_name_, class_to_idx_, state_dict=None):
+def Main(checkpoint_dir_, device_, model_, dataloaders_, cat_label_to_name_, class_to_idx_, state_dict=None,
+         PHASE_ONE=100, PHASE_TWO=20, PHASE_THREE=10):
     # Define how many times each phase will be running
-    PHASE_ONE = 100
-    PHASE_TWO = 20
-    PHASE_THREE = 10
 
     # Define fc_optimizer
     fc_optimizer = torch.optim.Adagrad(model_.fc.parameters(), lr=0.01, weight_decay=0.001)
@@ -106,16 +104,29 @@ if __name__ == '__main__':
     cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='kind_cat_to_name.json')
     criterion, optimizer = init_cri_opti(model)
     # 分类的模型
-    Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx)
+    Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx, PHASE_ONE=100, PHASE_TWO=20,
+         PHASE_THREE=10)
 
     # 数据初始化
-    checkpoint_dir, device, model, image_datasets, dataloaders = initialize_model(
+    model_name, output_size, hidden_layers, checkpoint_dir, data_dir, device, model, data_transforms, image_datasets, dataloaders, data_classes = initialize_model(
         which_file='Diseases',
         which_model='checkpoint1',
-        output_size=8,
-        return_params=['checkpoint_dir', 'device', 'model', 'image_datasets', 'dataloaders'])
+        output_size=8)
     # 读取json对应的label
     cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='diseases_cat_to_name.json')
 
     # 病虫害的模型
-    Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx)
+    # Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx, PHASE_ONE=10, PHASE_TWO=5,
+    #      PHASE_THREE=3)
+
+    # 数据初始化
+    model_name, output_size, hidden_layers, checkpoint_dir, data_dir, device, model, data_transforms, image_datasets, dataloaders, data_classes = initialize_model(
+        which_file='Water',
+        which_model='checkpoint2',
+        output_size=4)
+    # 读取json对应的label
+    cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='water_cat_to_name.json')
+
+    # 缺水的模型
+    # Main(checkpoint_dir, device, model, dataloaders, cat_label_to_name, class_to_idx, PHASE_ONE=100, PHASE_TWO=20,
+    #      PHASE_THREE=10)

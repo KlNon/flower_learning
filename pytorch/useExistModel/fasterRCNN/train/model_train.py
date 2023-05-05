@@ -5,6 +5,8 @@
 @Author  ：KlNon
 @Date    ：2023/5/3 13:32 
 """
+
+# 使用RCNN模型进行边界检测
 import torch
 from torchvision.models.detection import FasterRCNN
 from torchvision.models.detection.rpn import AnchorGenerator

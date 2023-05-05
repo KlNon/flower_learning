@@ -13,12 +13,10 @@ from shutil import copy2
 # 比例
 scale = [0.6, 0.2, 0.2]
 
-which_file = 'Diseases'
+which_file = 'Water'
 
 # 类别
-classes = ['Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
-           'Cherry_(including_sour)___healthy', 'Cherry_(including_sour)___Powdery_mildew', 'Strawberry___healthy',
-           'Strawberry___Leaf_scorch']
+classes = ['0', '1', '2', '3']
 
 for each in classes:
     datadir_normal = "./../assets/" + which_file + "/data/" + each + "/"  # 原文件夹
