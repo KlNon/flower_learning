@@ -23,6 +23,8 @@
       <excludeFolder url="file://$MODULE_DIR$/pytorch/useExistModel/validCode/output_data/test" />
       <excludeFolder url="file://$MODULE_DIR$/pytorch/useExistModel/validCode/output_data" />
       <excludeFolder url="file://$MODULE_DIR$/checkpoint2" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
+      <excludeFolder url="file://$MODULE_DIR$/tools/mid_pictures" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (Torch)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

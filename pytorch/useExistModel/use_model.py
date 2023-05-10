@@ -9,12 +9,14 @@ from matplotlib import pyplot as plt
 
 from pytorch.model.label.model_load_label import load_labels
 from pytorch.model.model_init import *
+from pytorch.model.test.model_test import modelTest
 from pytorch.useExistModel.img.img_show import imshow
 
 
 def main(num_of_classes=5):
     model = load_checkpoint(checkpoint_dir + 'checkpoint.pt')  # 加载预先训练好的模型
     model.to(device)  # 将模型移至相应设备（CPU或GPU）
+
     model.eval()  # 将模型设置为评估模式（关闭dropout和batch normalization等）
     with torch.no_grad():  # 在计算过程中禁用梯度计算，以节省内存和加速计算
         for images, labels in dataloaders['test_data']:  # 对测试数据集中的每个批次进行循环
@@ -79,27 +81,29 @@ def main(num_of_classes=5):
 
 
 if __name__ == '__main__':
-    # checkpoint_dir, device, image_datasets, dataloaders = initialize_model(which_file='Kind',
-    #                                                                        which_model='checkpoint',
-    #                                                                        output_size=103,
-    #                                                                        return_params=['checkpoint_dir', 'device',
-    #                                                                                       'image_datasets',
-    #                                                                                       'dataloaders'])
-    #
-    # model = load_checkpoint(checkpoint_dir + 'checkpoint.pt')  # 加载预先训练好的模型
-    # cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='kind_cat_to_name.json')
-    # main(num_of_classes=5)
+    checkpoint_dir, device, image_datasets, dataloaders = initialize_model(which_file='Kind',
+                                                                           which_model='checkpoint',
+                                                                           output_size=103,
+                                                                           return_params=['checkpoint_dir', 'device',
+                                                                                          'image_datasets',
+                                                                                          'dataloaders'])
 
-    # checkpoint_dir, device, image_datasets, dataloaders = initialize_model(which_file='Diseases',
-    #                                                                        which_model='checkpoint1',
-    #                                                                        output_size=8,
-    #                                                                        return_params=['checkpoint_dir', 'device',
-    #                                                                                       'image_datasets',
-    #                                                                                       'dataloaders'])
-    #
-    # model = load_checkpoint(checkpoint_dir + 'checkpoint.pt')  # 加载预先训练好的模型
-    # cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='diseases_cat_to_name.json')
-    # main(num_of_classes=5)
+    model = load_checkpoint(checkpoint_dir + 'checkpoint.pt')  # 加载预先训练好的模型
+    cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='kind_cat_to_name.json')
+    modelTest(model.to(device), dataloader=dataloaders['test_data'], device=device, show_graphs=False, save_graphs=False)
+    main(num_of_classes=5)
+
+    checkpoint_dir, device, image_datasets, dataloaders = initialize_model(which_file='Diseases',
+                                                                           which_model='checkpoint1',
+                                                                           output_size=8,
+                                                                           return_params=['checkpoint_dir', 'device',
+                                                                                          'image_datasets',
+                                                                                          'dataloaders'])
+
+    model = load_checkpoint(checkpoint_dir + 'checkpoint.pt')  # 加载预先训练好的模型
+    cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='diseases_cat_to_name.json')
+    modelTest(model.to(device), dataloader=dataloaders['test_data'], device=device, show_graphs=False, save_graphs=False)
+    main(num_of_classes=5)
 
     checkpoint_dir, device, image_datasets, dataloaders = initialize_model(which_file='Water',
                                                                            which_model='checkpoint2',
@@ -110,4 +114,6 @@ if __name__ == '__main__':
 
     model = load_checkpoint(checkpoint_dir + 'checkpoint.pt')  # 加载预先训练好的模型
     cat_label_to_name, class_to_idx = load_labels(image_datasets, file_name='water_cat_to_name.json')
+    modelTest(model.to(device), dataloader=dataloaders['test_data'], device=device, show_graphs=False, save_graphs=False)
     main(num_of_classes=4)
+

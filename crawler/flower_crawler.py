@@ -6,12 +6,15 @@
 @Date    ：2023/4/13 20:27 
 """
 import re
+from xml import etree
 
 import requests
 import os
 import time
 import urllib3
 import sys
+
+from bs4 import BeautifulSoup
 
 sys.setrecursionlimit(1000000)  # 设置递归深度限制为 1000000
 
