@@ -1,7 +1,7 @@
 """
 @Project ：.ProjectCode 
 @File    ：reg_and_log
-@Describe：
+@Describe：用户可视化界面
 @Author  ：KlNon
 @Date    ：2023/5/9 22:23 
 """
